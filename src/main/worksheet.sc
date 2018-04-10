@@ -1,0 +1,1 @@
+Vector(1,2,3).patch(1,Seq(7),1).toList

@@ -1,7 +1,7 @@
 ScalaJS-React Playground
 ========================
 
-Just an sbt project to try out various scalajs (mostly react centric things).
+Just an sbt project to try out various scalajs (mostly react centric) things.
 
 Uses:
 
