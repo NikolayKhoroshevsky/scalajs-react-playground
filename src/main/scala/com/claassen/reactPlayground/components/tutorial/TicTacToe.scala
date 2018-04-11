@@ -1,14 +1,47 @@
 package com.claassen.reactPlayground.components.tutorial
 
+import com.claassen.reactPlayground.components.tutorial.Board.winningLines
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.builder.Lifecycle
 import japgolly.scalajs.react.vdom.html_<^._
 
 import scala.scalajs.js.Dynamic.global
 
-object Square {
+sealed trait SquareState
 
-  import Game.SquareState
+case class BoardState(xIsNext: Boolean = true, squares: Vector[SquareState] = Vector.fill(9)(SquareState.None)) {
+  def move(i: Int): BoardState = if (!hasWinner && squares(i) == SquareState.None) {
+    val square = if (xIsNext) SquareState.X else SquareState.O
+    BoardState(!xIsNext, squares.patch(i, Seq(square), 1))
+  } else {
+    this
+  }
+
+  def hasWinner: Boolean = winningLines.exists {
+    case List(a, b, c) =>
+      squares(a) != SquareState.None && squares(a) == squares(b) && squares(a) == squares(c)
+  }
+
+  def winner: Option[String] = if (hasWinner) Some(if (xIsNext) "O" else "X") else None
+}
+
+object SquareState {
+
+  case object None extends SquareState {
+    override def toString: String = ""
+  }
+
+  case object X extends SquareState {
+    override def toString: String = "X"
+  }
+
+  case object O extends SquareState {
+    override def toString: String = "O"
+  }
+
+}
+
+object Square {
 
   case class Props(value: SquareState, onClick: Callback)
 
@@ -27,57 +60,27 @@ object Square {
 
 object Board {
 
-  import Game.SquareState
+  val winningLines = List(
+    List(0, 1, 2),
+    List(3, 4, 5),
+    List(6, 7, 8),
+    List(0, 3, 6),
+    List(1, 4, 7),
+    List(2, 5, 8),
+    List(0, 4, 8),
+    List(2, 4, 6)
+  )
 
-  case class BoardState(xIsNext: Boolean = true, squares: Vector[SquareState] = Vector.fill(9)(SquareState.None)) {
-    def move(i: Int): BoardState = if (squares(i) == SquareState.None) {
-      val square = if (xIsNext) SquareState.X else SquareState.O
-      BoardState(!xIsNext, squares.patch(i, Seq(square), 1))
-    } else {
-      this
-    }
-  }
+  case class Props(value: BoardState, onClick: Int => Callback)
 
-  class Backend($: BackendScope[Unit, BoardState]) {
+  class Backend($: BackendScope[Props, Unit]) {
 
-    val winningLines = List(
-      List(0, 1, 2),
-      List(3, 4, 5),
-      List(6, 7, 8),
-      List(0, 3, 6),
-      List(1, 4, 7),
-      List(2, 5, 8),
-      List(0, 4, 8),
-      List(2, 4, 6)
-    )
-
-    def handleClick(i: Int): CallbackTo[Unit] = {
-      $.modState(_.move(i))
-    }
-
-    def calculateWinner(s: BoardState): Option[String] = {
-      if (winningLines.exists {
-        case List(a, b, c) =>
-          s.squares(a) != SquareState.None &&s.squares(a) == s.squares(b) && s.squares(a) == s.squares(c)
-      }) {
-        if (s.xIsNext) Some("O") else Some("X")
-      } else None
-    }
-
-    def render(s: BoardState) = {
-      def status = calculateWinner(s) match {
-        case Some(winner) => s"The winner is $winner"
-        case None =>
-          val player = if (s.xIsNext) "X" else "O"
-          s"Next Turn: $player"
-      }
-
+    def render(p: Props) = {
       def renderSquare(i: Int) = {
-        Square(value = s.squares(i), onClick = handleClick(i))
+        Square(value = p.value.squares(i), onClick = p.onClick(i))
       }
 
       <.div(
-        <.div(^.className := "status", status),
         <.div(^.className := "board-row",
           renderSquare(0),
           renderSquare(1),
@@ -97,46 +100,65 @@ object Board {
     }
   }
 
-  val component = ScalaComponent.builder[Unit]("Board")
-    .initialState(BoardState())
+  val component = ScalaComponent.builder[Props]("Board")
     .renderBackend[Backend]
     .build
 
-  def apply() = component().vdomElement
+  def apply(value: BoardState, onClick: Int => Callback) = component(Props(value, onClick)).vdomElement
 }
 
 object Game {
 
-  sealed trait SquareState
+  class Backend($: BackendScope[Unit, List[BoardState]]) {
 
-  object SquareState {
-
-    case object None extends SquareState {
-      override def toString: String = ""
+    def handleClick(i: Int): Callback = {
+      $.modState { s =>
+        val current = s.head
+        current.move(i) :: s
+      }
     }
 
-    case object X extends SquareState {
-      override def toString: String = "X"
+    def jumpTo(i: Int): Callback = {
+      $.modState(x => x.drop(x.length - 1 - i)
+      )
     }
 
-    case object O extends SquareState {
-      override def toString: String = "O"
-    }
+    def render(s: List[BoardState]) = {
 
+      def status = s.head.winner match {
+        case Some(winner) => s"The winner is $winner"
+        case None =>
+          val player = if (s.head.xIsNext) "X" else "O"
+          s"Next Turn: $player"
+      }
+
+      def moves = s.zipWithIndex.map {
+        case (move, i) =>
+          val desc = if (i == 0) " Go to game start" else s"Go to move #$i"
+
+          <.li(
+            <.button(^.onClick --> jumpTo(i),
+              desc
+            )
+          )
+      }
+
+      <.div(^.className := "game",
+        <.div(^.className := "game-board",
+          Board(s.head, i => handleClick(i))
+        ),
+        <.div(^.className := "game-info",
+          <.div(status),
+          <.ol(moves: _*)
+        )
+      )
+    }
   }
 
   val component = ScalaComponent.builder[Unit]("Game")
-    .renderStatic(
-      <.div(^.className := "game",
-        <.div(^.className := "game-board",
-          Board()
-        ),
-        <.div(^.className := "game-info",
-          <.div(""),
-          <.ol("")
-        )
-      )
-    ).build
+    .initialState(BoardState() :: Nil)
+    .renderBackend[Backend]
+    .build
 
   def apply() = component().vdomElement
 }

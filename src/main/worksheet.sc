@@ -1,1 +1,3 @@
-Vector(1,2,3).patch(1,Seq(7),1).toList
+val x = List(0,1,2,3,4,5).reverse
+
+x.drop(x.length-0-1)
