@@ -1,9 +1,39 @@
 package com.claassen.reactPlayground.components.tutorial
 
+import diode.ActionResult.NoChange
+import diode._
+import diode.react.{ModelProxy, ReactConnector}
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
-object TicTacToe {
+object TicTacToeWithDiode {
+
+  object AppCircuit extends Circuit[GameState] with ReactConnector[GameState] {
+    override def initialModel: GameState = GameState()
+
+    override protected def actionHandler: AppCircuit.HandlerFunction = composeHandlers(
+      new GameHandler(zoomTo(_.moves))
+    )
+  }
+
+  class GameHandler[M](modelRW: ModelRW[M, List[BoardState]]) extends ActionHandler(modelRW) {
+
+    override protected def handle: PartialFunction[Any, ActionResult[M]] = {
+      case Move(i) =>
+        val current = value.head
+        val move = current.move(i)
+        if (move == current) NoChange else updated(move :: value)
+      case Rewind(i) =>
+        if(i == value.length-1) NoChange else updated(value.drop(value.length - 1 - i))
+    }
+  }
+
+  val gameConnection = AppCircuit.connect(x => x)
+
+  def apply() = gameConnection(p => Game.component(p)).vdomElement
+
+  case class Move(i: Int) extends Action
+  case class Rewind(i: Int) extends Action
 
   val winningLines = List(
     List(0, 1, 2),
@@ -15,6 +45,8 @@ object TicTacToe {
     List(0, 4, 8),
     List(2, 4, 6)
   )
+
+  case class GameState(moves: List[BoardState] = BoardState()::Nil)
 
   case class BoardState(xIsNext: Boolean = true, squares: Vector[SquareState] = Vector.fill(9)(SquareState.None)) {
     def move(i: Int): BoardState = if (!hasWinner && squares(i) == SquareState.None) {
@@ -107,46 +139,32 @@ object TicTacToe {
 
   object Game {
 
-    class Backend($: BackendScope[Unit, List[BoardState]]) {
+    class Backend($: BackendScope[ModelProxy[GameState], Unit]) {
 
-      def handleClick(i: Int): Callback = {
-        $.modState { s =>
-          val current = s.head
-          val move = current.move(i)
-          if (move == current) s else move :: s
-        }
-      }
+      def render(p: ModelProxy[GameState]) = {
 
-      def jumpTo(i: Int): Callback = {
-        $.modState(x => x.drop(x.length - 1 - i)
-        )
-      }
-
-      def render(s: List[BoardState]) = {
-
-        def status = s.head.winner match {
+        def status = p().moves.head.winner match {
           case Some(winner) => s"The winner is $winner"
           case None =>
-            val player = if (s.head.xIsNext) "X" else "O"
+            val player = if (p().moves.head.xIsNext) "X" else "O"
             s"Next Turn: $player"
         }
 
-        def moves = s.zipWithIndex.map {
+        def moves = p().moves.zipWithIndex.map {
           case (move, i) =>
             val desc = if (i == 0) " Go to game start" else s"Go to move #$i"
 
             <.li(
               <.button(^.key := i,
-                ^.onClick --> jumpTo(i),
+                ^.onClick --> p.dispatchCB(Rewind(i)),
                 desc
               )
             )
         }
 
         <.div(^.className := "game",
-          <.styleTag(),
           <.div(^.className := "game-board",
-            Board(s.head, i => handleClick(i))
+            Board(p().moves.head, i => p.dispatchCB(Move(i)))
           ),
           <.div(^.className := "game-info",
             <.div(status),
@@ -156,12 +174,10 @@ object TicTacToe {
       }
     }
 
-    val component = ScalaComponent.builder[Unit]("Game")
-      .initialState(BoardState() :: Nil)
+    val component = ScalaComponent.builder[ModelProxy[GameState]]("Game")
       .renderBackend[Backend]
       .build
 
-    def apply() = component().vdomElement
   }
 
 }
