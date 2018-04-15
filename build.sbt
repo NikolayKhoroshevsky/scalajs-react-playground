@@ -15,9 +15,9 @@ scalaJSUseMainModuleInitializer := true
 
 emitSourceMaps := true
 
-val scalaJSReactVersion = "1.2.0"
+val scalaJSReactVersion = "1.1.0"
 val scalaCssVersion = "0.5.5"
-val reactJSVersion = "16.2.0"
+val reactJSVersion = "15.6.1"
 val diodeVersion = "1.1.3"
 
 libraryDependencies ++= Seq(

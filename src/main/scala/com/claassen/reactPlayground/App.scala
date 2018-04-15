@@ -1,5 +1,6 @@
 package com.claassen.reactPlayground
 
+import com.claassen.reactPlayground.components.tutorial.{ReactCounter, ReactCounterWithDiode}
 import com.claassen.reactPlayground.css.AppCSS
 import com.claassen.reactPlayground.routes.AppRouter
 import org.scalajs.dom.document
@@ -10,6 +11,7 @@ object App {
     println("loading playground")
     val root = document.getElementById("root")
     AppCSS.load
+    //ReactCounterWithDiode().renderIntoDOM(root)
     AppRouter.router().renderIntoDOM(root)
   }
 }

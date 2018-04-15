@@ -9,8 +9,8 @@ object Tutorial extends ChapterPage {
 
   case object MTicTacToe extends Item("TicTacToe", "tictactoe", () => TicTacToe.Game())
 
-//  case object MTicTacToWithDiode
-//    extends Item("TicTacToe w/ Diode", "tictactoe-diode", () => TicTacToeWithDiode())
+  case object MTicTacToWithDiode
+    extends Item("TicTacToe w/ Diode", "tictactoe-diode", () => TicTacToeWithDiode())
 
   case object MReactCounter
     extends Item("React Counter", "reactcounter", () => ReactCounter())
@@ -18,5 +18,5 @@ object Tutorial extends ChapterPage {
   case object MReactCounterWithDiode
     extends Item("React Counter w/ Diode", "reactcounter-diode", () => ReactCounterWithDiode())
 
-  val menu = Vector(MShoppingList, MTicTacToe, MReactCounter, MReactCounterWithDiode)
+  val menu = Vector(MShoppingList, MTicTacToe, MTicTacToWithDiode, MReactCounter, MReactCounterWithDiode)
 }
