@@ -1,4 +1,4 @@
-package com.claassen.reactPlayground.components.tutorial
+package com.claassen.reactPlayground.components.samples
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._

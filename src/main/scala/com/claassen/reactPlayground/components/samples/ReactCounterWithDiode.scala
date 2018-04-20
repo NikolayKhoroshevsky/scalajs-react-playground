@@ -1,8 +1,8 @@
-package com.claassen.reactPlayground.components.tutorial
+package com.claassen.reactPlayground.components.samples
 
 import diode.react.{ModelProxy, ReactConnector}
 import diode.{Action, ActionHandler, Circuit}
-import japgolly.scalajs.react.{BackendScope, _}
+import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
 object ReactCounterWithDiode {

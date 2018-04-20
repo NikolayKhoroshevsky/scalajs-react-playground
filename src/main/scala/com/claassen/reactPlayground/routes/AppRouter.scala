@@ -2,7 +2,7 @@ package com.claassen.reactPlayground.routes
 
 import com.claassen.reactPlayground.components.{Footer, TopNav}
 import com.claassen.reactPlayground.models.Menu
-import com.claassen.reactPlayground.pages.{HomePage, Item, ItemsPage, Tutorial}
+import com.claassen.reactPlayground.pages._
 import japgolly.scalajs.react.extra.router.{Resolution, RouterConfigDsl, RouterCtl, _}
 import japgolly.scalajs.react.vdom.html_<^._
 
@@ -21,13 +21,18 @@ object AppRouter {
         case Items(p) => p
       }
     val tutorialRoutes: Rule =
-      Tutorial.routes.prefixPath_/("#tutorial").pmap[AppPage](Items) {
+      Samples.routes.prefixPath_/("#samples").pmap[AppPage](Items) {
+        case Items(p) => p
+      }
+    val cnwTestsRoutes: Rule =
+      CnWTests.routes.prefixPath_/("#cnw").pmap[AppPage](Items) {
         case Items(p) => p
       }
     (trimSlashes
       | staticRoute(root, Home) ~> render(HomePage())
       | itemRoutes
-      | tutorialRoutes)
+      | tutorialRoutes
+      | cnwTestsRoutes)
       .notFound(redirectToPage(Home)(Redirect.Replace))
       .renderWith(layout)
   }
@@ -35,7 +40,8 @@ object AppRouter {
   val mainMenu = Vector(
     Menu("Home", Home),
     Menu("Items", Items(ItemsPage.Info)),
-    Menu("Tutorial", Items(Tutorial.MShoppingList))
+    Menu("Samples", Items(Samples.MShoppingList)),
+    Menu("CnW Tests", Items(CnWTests.MBigCalendar))
   )
 
   def layout(c: RouterCtl[AppPage], r: Resolution[AppPage]) =

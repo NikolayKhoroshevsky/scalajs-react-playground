@@ -1,6 +1,6 @@
 package com.claassen.reactPlayground
 
-import com.claassen.reactPlayground.components.tutorial.{ReactCounter, ReactCounterWithDiode}
+import com.claassen.reactPlayground.components.samples.{ReactCounter, ReactCounterWithDiode}
 import com.claassen.reactPlayground.css.AppCSS
 import com.claassen.reactPlayground.routes.AppRouter
 import org.scalajs.dom.document

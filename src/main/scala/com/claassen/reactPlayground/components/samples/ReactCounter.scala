@@ -1,4 +1,4 @@
-package com.claassen.reactPlayground.components.tutorial
+package com.claassen.reactPlayground.components.samples
 
 import japgolly.scalajs.react.BackendScope
 
