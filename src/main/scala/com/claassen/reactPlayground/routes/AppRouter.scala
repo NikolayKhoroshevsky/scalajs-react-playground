@@ -16,10 +16,6 @@ object AppRouter {
 
   val config = RouterConfigDsl[AppPage].buildConfig { dsl =>
     import dsl._
-    val itemRoutes: Rule =
-      ItemsPage.routes.prefixPath_/("#items").pmap[AppPage](Items) {
-        case Items(p) => p
-      }
     val tutorialRoutes: Rule =
       Samples.routes.prefixPath_/("#samples").pmap[AppPage](Items) {
         case Items(p) => p
@@ -28,20 +24,24 @@ object AppRouter {
       CnWTests.routes.prefixPath_/("#cnw").pmap[AppPage](Items) {
         case Items(p) => p
       }
+    val antDesignRoutes: Rule =
+      AntDesign.routes.prefixPath_/("#antd").pmap[AppPage](Items) {
+        case Items(p) => p
+      }
     (trimSlashes
       | staticRoute(root, Home) ~> render(HomePage())
-      | itemRoutes
       | tutorialRoutes
-      | cnwTestsRoutes)
+      | cnwTestsRoutes
+      | antDesignRoutes)
       .notFound(redirectToPage(Home)(Redirect.Replace))
       .renderWith(layout)
   }
 
   val mainMenu = Vector(
     Menu("Home", Home),
-    Menu("Items", Items(ItemsPage.Info)),
     Menu("Samples", Items(Samples.MShoppingList)),
-    Menu("CnW Tests", Items(CnWTests.MBigCalendar))
+    Menu("CnW Tests", Items(CnWTests.MBigCalendar)),
+    Menu("Ant Design", Items(AntDesign.MBadge))
   )
 
   def layout(c: RouterCtl[AppPage], r: Resolution[AppPage]) =

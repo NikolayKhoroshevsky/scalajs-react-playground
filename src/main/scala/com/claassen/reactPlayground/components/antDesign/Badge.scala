@@ -1,11 +1,11 @@
-package com.claassen.reactPlayground.components.samples
+package com.claassen.reactPlayground.components.antDesign
 
 import com.payalabs.scalajs.react.bridge.{ReactBridgeComponent, WithProps}
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.vdom.html_<^._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.html_<^._
 
 object Badge extends ReactBridgeComponent {
 

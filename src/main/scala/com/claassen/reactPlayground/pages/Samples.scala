@@ -21,13 +21,9 @@ object Samples extends ChapterPage {
   case object MReactCollapse
     extends Item("React Collapse Wrapper", "reactcollapse", () => ReactCollapseExample2())
 
-  case object MBadge
-    extends Item("Badge Bridge", "badge-bridge", () => BadgeExample(3))
-
   val menu = Vector(MShoppingList,
     MTicTacToe, MTicTacToWithDiode,
     MReactCounter, MReactCounterWithDiode,
-    MReactCollapse,
-    MBadge)
+    MReactCollapse)
 }
 
