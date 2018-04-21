@@ -34,29 +34,18 @@ object DatePicker extends ReactBridgeComponent {
 
 object DatePickerExample {
 
-  class Backend($: BackendScope[Int, Int]) {
+  class Backend($: BackendScope[Unit, Unit]) {
 
-    def render(p: Int, s: Int) = {
+    def render(p: Unit, s: Unit) = {
       <.div(
-        Badge(count = s)(
-          <.a(^.href := "#", ^.className := "head-example")
-        ),
-        <.button(
-          ^.onClick --> $.modState(_ + 1),
-          "+"
-        ),
-        <.button(
-          ^.onClick --> $.modState(_ - 1),
-          "-"
-        )
+        DatePicker()
       )
     }
   }
 
-  val component = ScalaComponent.builder[Int]("BadgeExample")
-    .initialStateFromProps(p => p)
+  val component = ScalaComponent.builder[Unit]("DatePickerExample")
     .renderBackend[Backend]
     .build
 
-  def apply(count: Int) = component(count).vdomElement
+  def apply() = component().vdomElement
 }

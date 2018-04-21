@@ -40,7 +40,7 @@ object AppRouter {
   val mainMenu = Vector(
     Menu("Home", Home),
     Menu("Samples", Items(Samples.MShoppingList)),
-    Menu("CnW Tests", Items(CnWTests.MBigCalendar)),
+    Menu("CnW Tests", Items(CnWTests.MFullCalendar)),
     Menu("Ant Design", Items(AntDesign.MBadge))
   )
 

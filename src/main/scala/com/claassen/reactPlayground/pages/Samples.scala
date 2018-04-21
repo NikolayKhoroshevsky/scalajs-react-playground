@@ -21,9 +21,13 @@ object Samples extends ChapterPage {
   case object MReactCollapse
     extends Item("React Collapse Wrapper", "reactcollapse", () => ReactCollapseExample2())
 
+  case object MMomentInterop
+  extends Item("Moment", "moment", () => MomentInterop())
+
   val menu = Vector(MShoppingList,
     MTicTacToe, MTicTacToWithDiode,
     MReactCounter, MReactCounterWithDiode,
-    MReactCollapse)
+    MReactCollapse,
+    MMomentInterop)
 }
 

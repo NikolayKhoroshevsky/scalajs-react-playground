@@ -6,5 +6,5 @@ object CnWTests extends ChapterPage {
   case object MBigCalendar extends Item("Big Calendar", "bigcalendar", () => BigCalendarExample())
   case object MFullCalendar extends Item("Full Calendar", "fullcalendar", () => FullCalendar())
 
-  val menu = Vector(MBigCalendar, MFullCalendar)
+  val menu = Vector(MFullCalendar, MBigCalendar)
 }

@@ -12,11 +12,22 @@ import scala.scalajs.js.annotation.JSImport
 
 object BigCalendar extends ReactBridgeComponent {
 
-  @JSImport("react-big-calendar", "BigCalendar")
+  @JSImport("react-big-calendar", JSImport.Default)
   @js.native
-  object RawComponent extends js.Object
+  object RawComponent extends js.Object {
+    def momentLocalizer(moment: Moment.type): Unit = js.native
+  }
 
-  override lazy val componentValue = RawComponent
+  @JSImport("moment", JSImport.Default)
+  @js.native
+  object Moment extends js.Object {
+    def apply(): js.Object = js.native
+  }
+
+  override lazy val componentValue = {
+    RawComponent.momentLocalizer(Moment)
+    RawComponent
+  }
 
   def apply(/**
               * Props passed to main calendar `<div>`.
@@ -668,17 +679,25 @@ case class Event(title: String,
 
 object BigCalendarExample {
 
+  val events = {
+    val start = new Date()
+    val end = new Date()
+    end.setHours(end.getHours + 1)
+    List(Event("Some Event", start, end, allDay = false))
+  }
+
   case class Props(events: List[Event])
 
   class Backend($: BackendScope[Props, Unit]) {
 
-
     def render(p: Props) = {
 
-      def getEvents: js.Array[js.Object] = js.Array(p.events.map(_.toJS))
+      def getEvents(): js.Array[js.Object] = js.Array(p.events.map(_.toJS): _*)
 
-      <.div(
-        BigCalendar(events = getEvents)
+      g.console.log(getEvents())
+      <.div(^.style := js.Dynamic.literal(height = "600px"),
+        "Calendar",
+        BigCalendar(events = getEvents())
       )
     }
   }
@@ -687,5 +706,5 @@ object BigCalendarExample {
     .renderBackend[Backend]
     .build
 
-  def apply() = component(Props(Nil)).vdomElement
+  def apply() = component(Props(events)).vdomElement
 }

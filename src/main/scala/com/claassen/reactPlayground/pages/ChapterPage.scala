@@ -12,11 +12,7 @@ abstract class Item(val title: String,
                     val routerPath: String,
                     val render: () => VdomElement)
 
-
-trait ChapterPage {
-
-  def menu: Seq[Item]
-
+object ChapterPage {
   object Style extends StyleSheet.Inline {
     import dsl._
     val container = style(display.flex, minHeight(600.px))
@@ -26,6 +22,12 @@ trait ChapterPage {
 
     val content = style(padding(30.px))
   }
+}
+
+trait ChapterPage {
+
+  def menu: Seq[Item]
+
 
 
   lazy val routes = RouterConfigDsl[Item].buildRule { dsl =>
@@ -39,13 +41,13 @@ trait ChapterPage {
   }
 
   lazy val component = ScalaComponent
-    .builder[Props]("ItemsPage")
+    .builder[Props]("ChapterPage")
     .render_P { P =>
       <.div(
-        Style.container,
-        <.div(Style.nav,
+        ChapterPage.Style.container,
+        <.div(ChapterPage.Style.nav,
           LeftNav(LeftNav.Props(menu, P.selectedPage, P.ctrl))),
-        <.div(Style.content, P.selectedPage.render())
+        <.div(ChapterPage.Style.content, P.selectedPage.render())
       )
     }
     .build
