@@ -1,4 +1,4 @@
-package com.claassen.reactPlayground.components.cnwtests
+package com.claassen.reactPlayground.components.calendars
 
 import diode.{Action, ActionHandler, Circuit}
 import diode.react.{ModelProxy, ReactConnector}

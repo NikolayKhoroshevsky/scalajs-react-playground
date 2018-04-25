@@ -1,62 +1,47 @@
 package com.claassen.reactPlayground
 
-import com.claassen.reactPlayground.components.samples.{ReactCounter, ReactCounterWithDiode}
+import com.claassen.reactPlayground.components.misc.{ReactCollapseExample, ReactCounterProtocol, TicTacToe}
 import com.claassen.reactPlayground.css.AppCSS
 import com.claassen.reactPlayground.routes.AppRouter
+import diode.react.ReactConnector
+import diode.{ActionHandler, Circuit}
 import org.scalajs.dom.document
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSImport
-import scala.scalajs.js.Dynamic.{global => g}
-
 object App {
-//
-//  @JSImport("moment", JSImport.Namespace)
-//  @js.native
-//  object moment extends js.Object
-//
-//  @JSImport("antd", JSImport.Namespace)
-//  @js.native
-//  object antd extends js.Object
-//
-//  @JSImport("react", JSImport.Namespace)
-//  @js.native
-//  object react extends js.Object
-//
-//  @JSImport("react-motion", JSImport.Namespace)
-//  @js.native
-//  object reactMotion extends js.Object
-//
-//  @JSImport("react-big-calendar", JSImport.Namespace)
-//  @js.native
-//  object reactBigCalendar extends js.Object
-//
-//  @JSImport("react-collapse", JSImport.Namespace)
-//  @js.native
-//  object reactCollapse extends js.Object
-//
-//  @JSImport("jquery", JSImport.Namespace)
-//  @js.native
-//  object jquery extends js.Object
 
   def main(args: Array[String]): Unit = {
-//    g.console.log("started")
-//    g.console.log("moment:")
-//    g.console.log(moment)
-//    g.console.log("antd:")
-//    g.console.log(antd)
-//    g.console.log("react:")
-//    g.console.log(react)
-//    g.console.log("react-motion:")
-//    g.console.log(reactMotion)
-//    g.console.log("react-big-calendar:")
-//    g.console.log(reactBigCalendar)
-//    g.console.log("react-collapse:")
-//    g.console.log(reactCollapse)
-//    g.console.log("jquery:")
-//    g.console.log(jquery)
     val root = document.getElementById("root")
     AppCSS.load
     AppRouter.router().renderIntoDOM(root)
   }
 }
+
+object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
+  // define initial value for the application model
+  def initialModel = RootModel()
+
+  val counterHandler = new ActionHandler(zoomTo(_.app.misc.counter.counter)) {
+
+    import ReactCounterProtocol._
+
+    override def handle = {
+      case Increase => updated(value + 1)
+      case Decrease => updated(value - 1)
+      case Reset => updated(0)
+    }
+  }
+
+  override protected def actionHandler: AppCircuit.HandlerFunction =
+    composeHandlers(
+      counterHandler,
+      new TicTacToe.GameHandler[RootModel](zoomTo(_.app.misc.ticTacToe.moves)),
+      new ReactCollapseExample.Handler[RootModel](zoomTo(_.app.misc.collapse))
+    )
+}
+
+case class RootModel(app: AppState = AppState())
+case class AppState(misc: MiscState = MiscState())
+
+case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
+                     collapse: ReactCollapseExample.Props = ReactCollapseExample.Props(),
+                     counter: ReactCounterProtocol.CounterModel = ReactCounterProtocol.CounterModel(0))

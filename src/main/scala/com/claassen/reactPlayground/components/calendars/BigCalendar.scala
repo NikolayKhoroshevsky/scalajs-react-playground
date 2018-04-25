@@ -1,4 +1,4 @@
-package com.claassen.reactPlayground.components.cnwtests
+package com.claassen.reactPlayground.components.calendars
 
 import java.util.Date
 
@@ -9,6 +9,8 @@ import japgolly.scalajs.react.vdom.html_<^._
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.{global => g}
 import scala.scalajs.js.annotation.JSImport
+
+import moment._
 
 object BigCalendar extends ReactBridgeComponent {
 
@@ -664,18 +666,10 @@ object BigCalendar extends ReactBridgeComponent {
             */): WithProps = auto
 }
 
-case class Event(title: String,
-                 start: Date,
-                 end: Date,
-                 allDay: Boolean) {
-  def toJS: js.Object = {
-    js.Dynamic.literal(
-      title = title,
-      start = new js.Date(start.getTime.toDouble),
-      end = new js.Date(end.getTime.toDouble),
-      allDay = allDay)
-  }
-}
+class Event(val title: String,
+            val start: Date,
+            val end: Date,
+            val allDay: Boolean) extends js.Object
 
 object BigCalendarExample {
 
@@ -683,7 +677,7 @@ object BigCalendarExample {
     val start = new Date()
     val end = new Date()
     end.setHours(end.getHours + 1)
-    List(Event("Some Event", start, end, allDay = false))
+    List(new Event("Some Event", start, end, allDay = false))
   }
 
   case class Props(events: List[Event])
@@ -692,7 +686,7 @@ object BigCalendarExample {
 
     def render(p: Props) = {
 
-      def getEvents(): js.Array[js.Object] = js.Array(p.events.map(_.toJS): _*)
+      def getEvents(): js.Array[js.Object] = js.Array(p.events: _*)
 
       g.console.log(getEvents())
       <.div(^.style := js.Dynamic.literal(height = "600px"),

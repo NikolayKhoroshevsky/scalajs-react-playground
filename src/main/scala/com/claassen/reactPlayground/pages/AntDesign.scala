@@ -1,6 +1,6 @@
 package com.claassen.reactPlayground.pages
 
-import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample}
+import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample, TimePickerExample}
 
 
 object AntDesign extends ChapterPage {
@@ -11,6 +11,9 @@ object AntDesign extends ChapterPage {
   case object MDatePicker
     extends Item("DatePicker", "datepicker", () => DatePickerExample())
 
-  val menu = Vector(MBadge, MDatePicker)
+  case object MTimePicker
+    extends Item("TimePicker", "timepicker", () => TimePickerExample())
+
+  val menu = Vector(MBadge, MDatePicker, MTimePicker)
 }
 

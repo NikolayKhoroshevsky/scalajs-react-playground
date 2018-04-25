@@ -1,4 +1,4 @@
-package com.claassen.reactPlayground.components.samples
+package com.claassen.reactPlayground.components.misc
 
 import diode.react.{ModelProxy, ReactConnector}
 import diode.{Action, ActionHandler, Circuit}
@@ -8,33 +8,23 @@ import japgolly.scalajs.react.vdom.html_<^._
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.{global => g}
 import scala.scalajs.js.annotation.JSImport
+import moment._
+
 
 object MomentInterop {
-
-  @JSImport("moment", JSImport.Default)
-  @js.native
-  object Moment extends js.Object {
-    def apply(): js.Object = js.native
-  }
-
-  @JSImport("react-big-calendar", JSImport.Default)
-  @js.native
-  object BigCalendar extends js.Object {
-    def momentLocalizer(moment: Moment.type ): Unit = js.native
-  }
-
 
   class Backend($: BackendScope[Unit, Unit]) {
 
       def start = Callback {
+        Moment.locale("en_US")
         g.console.log(Moment())
-        g.console.log(BigCalendar)
-        g.console.log(BigCalendar.momentLocalizer(Moment))
       }
 
       def render(p: Unit, s: Unit) = {
         <.div(
-          <.div(^.id := "container")
+          <.div(^.id := "container",
+            Moment().format()
+          )
         )
       }
     }

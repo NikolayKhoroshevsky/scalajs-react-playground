@@ -6,7 +6,9 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.extra.router.{RouterConfigDsl, RouterCtl}
 import com.claassen.reactPlayground.components.LeftNav
+import diode.react.{ModelProxy, ReactConnector}
 import japgolly.scalajs.react.vdom.VdomElement
+
 
 abstract class Item(val title: String,
                     val routerPath: String,
