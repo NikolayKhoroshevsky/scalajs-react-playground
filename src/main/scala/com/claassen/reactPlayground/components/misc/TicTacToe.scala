@@ -1,20 +1,14 @@
 package com.claassen.reactPlayground.components.misc
 
 
-import com.claassen.reactPlayground.AppCircuit
 import diode.ActionResult.NoChange
 import diode._
-import diode.react.{ModelProxy, ReactConnector}
+import diode.react.ModelProxy
 import japgolly.scalajs.react._
+import japgolly.scalajs.react.component.Scala.Unmounted
 import japgolly.scalajs.react.vdom.html_<^._
 
-object TicTacToeBuilder {
 
-  def build() = {
-    val connection = AppCircuit.connect(_.app.misc.ticTacToe)
-    connection(p => TicTacToe(p)).vdomElement
-  }
-}
 
 
 object TicTacToe {
@@ -31,7 +25,7 @@ object TicTacToe {
     }
   }
 
-  def apply(model: ModelProxy[GameState]) = Game.component(model)
+  def apply(model: ModelProxy[GameState]): Unmounted[ModelProxy[GameState], Unit, Game.Backend] = Game.component(model)
 
   case class Move(i: Int) extends Action
   case class Rewind(i: Int) extends Action

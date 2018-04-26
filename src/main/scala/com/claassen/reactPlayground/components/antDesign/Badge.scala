@@ -1,6 +1,8 @@
 package com.claassen.reactPlayground.components.antDesign
 
 import com.payalabs.scalajs.react.bridge.{ReactBridgeComponent, WithProps}
+import diode.react.ModelProxy
+import diode.{Action, ActionHandler, ActionResult, ModelRW}
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
@@ -26,29 +28,38 @@ object Badge extends ReactBridgeComponent {
 
 object BadgeExample {
 
-  class Backend($: BackendScope[Int, Int]) {
+  case class Props(count: Int = 0)
 
-    def render(p: Int, s: Int) = {
+  case class SetCount(newCount: Int) extends Action
+
+  class Handler[M](modelRW: ModelRW[M,Props]) extends ActionHandler(modelRW) {
+    override protected def handle: PartialFunction[Any, ActionResult[M]] = {
+      case SetCount(newCount) => updated(Props(newCount))
+    }
+  }
+
+  class Backend($: BackendScope[ModelProxy[Props], Unit]) {
+
+    def render(p: ModelProxy[Props]) = {
       <.div(
-        Badge(count = s)(
+        Badge(count = p().count)(
           <.a(^.href := "#", ^.className := "head-example")
         ),
         <.button(
-          ^.onClick --> $.modState(_ + 1),
+          ^.onClick --> p.dispatchCB(SetCount(p().count + 1)),
           "+"
         ),
         <.button(
-          ^.onClick --> $.modState(_ - 1),
+          ^.onClick --> p.dispatchCB(SetCount(p().count - 1)),
           "-"
         )
       )
     }
   }
 
-  val component = ScalaComponent.builder[Int]("BadgeExample")
-    .initialStateFromProps(p => p)
+  val component = ScalaComponent.builder[ModelProxy[Props]]("BadgeExample")
     .renderBackend[Backend]
     .build
 
-  def apply(count: Int) = component(count).vdomElement
+  def apply(props: ModelProxy[Props]) = component(props).vdomElement
 }

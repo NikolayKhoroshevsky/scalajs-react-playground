@@ -1,6 +1,5 @@
 package com.claassen.reactPlayground.components.misc
 
-import com.claassen.reactPlayground.AppCircuit
 import com.payalabs.scalajs.react.bridge.{ReactBridgeComponent, WithProps}
 import diode.react.ModelProxy
 import diode.{Action, ActionHandler, ActionResult, ModelRW}
@@ -9,13 +8,6 @@ import japgolly.scalajs.react.{ReactEventFromInput, _}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-
-object ReactCollapseExampleBuilder {
-  def build() = {
-    val connection = AppCircuit.connect(_.app.misc.collapse)
-    connection(p => ReactCollapseExample(p)).vdomElement
-  }
-}
 
 object ReactCollapse extends ReactBridgeComponent {
 

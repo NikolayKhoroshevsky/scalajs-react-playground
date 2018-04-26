@@ -3,11 +3,15 @@ package com.claassen.reactPlayground.components.antDesign
 import java.util.Date
 
 import com.payalabs.scalajs.react.bridge.{ReactBridgeComponent, WithProps}
+import diode.{Action, ActionHandler, ActionResult, ModelRW}
+import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
+import scala.scalajs.js.Dynamic.{global => g}
+import js.JSConverters._
 import moment._
 
 object DatePicker extends ReactBridgeComponent {
@@ -24,8 +28,8 @@ object DatePicker extends ReactBridgeComponent {
             className: String = "",
             disabled: Boolean = false,
             open: js.UndefOr[Boolean] = js.undefined,
-            dateRender: js.UndefOr[js.Function2[String,String,js.Object]] = js.undefined,
-            disabledData: js.UndefOr[js.Function1[String,Boolean]] = js.undefined,
+            dateRender: js.UndefOr[js.Function2[String, String, js.Object]] = js.undefined,
+            disabledDate: js.UndefOr[js.UndefOr[moment.Date] => Boolean] = js.undefined,
             getCalendarContainer: js.UndefOr[js.Function] = js.undefined,
             locale: js.UndefOr[js.Object] = js.undefined,
             placeHolder: String = "",
@@ -35,28 +39,63 @@ object DatePicker extends ReactBridgeComponent {
             style: js.UndefOr[js.Object] = js.undefined,
             onOpenChange: js.UndefOr[Boolean => Callback] = js.undefined,
             defaultValue: js.UndefOr[moment.Date] = js.undefined,
-            disabledTime: js.UndefOr[js.Function1[js.Date,Boolean]] = js.undefined,
+            disabledTime: js.UndefOr[moment.Date => Boolean] = js.undefined,
             format: String = "YYYY-MM-DD",
             renderExtraFooter: js.UndefOr[js.Function0[js.Object]] = js.undefined,
             showTime: Boolean = false,
             showToday: Boolean = true,
-            value: js.UndefOr[moment.Date] = js.undefined): WithProps = auto
+            value: js.UndefOr[moment.Date] = js.undefined,
+            onCalendarChange: js.UndefOr[js.Function4[moment.Date, moment.Date, String, String, Unit]] = js.undefined,
+            onChange: js.UndefOr[(moment.Date, String) => Callback] = js.undefined,
+            onOk: js.UndefOr[js.Function] = js.undefined): WithProps = auto
 }
 
 object DatePickerExample {
 
-  class Backend($: BackendScope[Unit, Unit]) {
+  case class Props(value: Option[moment.Date] = None)
 
-    def render(p: Unit, s: Unit) = {
-      <.div(^.style := js.Dynamic.literal(height = "600px"),
-        DatePicker()
+  case class OnChange(value: Option[moment.Date]) extends Action
+
+  class Handler[M](modelRW: ModelRW[M,Props]) extends ActionHandler(modelRW) {
+    override protected def handle: PartialFunction[Any, ActionResult[M]] = {
+      case OnChange(v) => updated(Props(v))
+    }
+  }
+
+  class Backend($: BackendScope[ModelProxy[Props], Unit]) {
+
+    def handleChange(date: moment.Date, dateString: String): Callback = {
+      val d = Option(date)
+      g.console.log(d.toString)
+      g.console.log(date)
+      $.props.flatMap(_.dispatchCB(OnChange(d)))
+    }
+
+
+    def checkDisabledDate(date: js.UndefOr[moment.Date]): Boolean = {
+      if(date == null) false else date.exists(x => Set(0, 6).contains(x.day()))
+    }
+
+    def render(p: ModelProxy[Props]) = {
+      val currentValue: String = p().value.map(_.format()).getOrElse("None")
+
+      <.div(
+        <.div(
+          DatePicker(defaultValue = p().value.orUndefined,
+            disabledDate = checkDisabledDate _,
+            onChange = handleChange _
+          )
+        ),
+        <.div(
+          <.label("Value: "), currentValue
+        )
       )
     }
   }
 
-  val component = ScalaComponent.builder[Unit]("DatePickerExample")
+  val component = ScalaComponent.builder[ModelProxy[Props]]("DatePickerExample")
     .renderBackend[Backend]
     .build
 
-  def apply() = component().vdomElement
+  def apply(props: ModelProxy[Props]) = component(props).vdomElement
 }

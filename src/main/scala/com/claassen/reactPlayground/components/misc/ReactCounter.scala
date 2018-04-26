@@ -1,17 +1,10 @@
 package com.claassen.reactPlayground.components.misc
 
-import com.claassen.reactPlayground.AppCircuit
-import diode.react.{ModelProxy, ReactConnectProxy, ReactConnector}
-import diode.{Action, ActionHandler, Circuit}
+import diode.Action
+import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
-object ReactCounterBuilder {
-  def build() = {
-    val connection = AppCircuit.connect(_.app.misc.counter)
-    connection(p => ReactCounter(p)).vdomElement
-  }
-}
 
 object ReactCounterProtocol {
   case class CounterModel(counter: Int)

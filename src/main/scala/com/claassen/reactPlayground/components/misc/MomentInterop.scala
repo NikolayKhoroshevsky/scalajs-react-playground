@@ -1,39 +1,59 @@
 package com.claassen.reactPlayground.components.misc
 
-import diode.react.{ModelProxy, ReactConnector}
-import diode.{Action, ActionHandler, Circuit}
-import japgolly.scalajs.react.{BackendScope, _}
+import diode._
+import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.html_<^._
+import japgolly.scalajs.react.{BackendScope, _}
+import moment._
 
 import scala.scalajs.js
-import scala.scalajs.js.Dynamic.{global => g}
-import scala.scalajs.js.annotation.JSImport
-import moment._
 
 
 object MomentInterop {
 
-  class Backend($: BackendScope[Unit, Unit]) {
+  case class Props(now: moment.Date = Moment())
 
-      def start = Callback {
-        Moment.locale("en_US")
-        g.console.log(Moment())
-      }
+  case object Tick extends Action
 
-      def render(p: Unit, s: Unit) = {
-        <.div(
-          <.div(^.id := "container",
-            Moment().format()
-          )
-        )
-      }
+  class Handler[M](modelRW: ModelRW[M, Props]) extends ActionHandler(modelRW) {
+    override protected def handle: PartialFunction[Any, ActionResult[M]] = {
+      case Tick =>
+        updated(Props(Moment()))
+    }
+  }
+
+  class Backend($: BackendScope[ModelProxy[Props], Unit]) {
+
+    var interval: js.UndefOr[js.timers.SetIntervalHandle] = js.undefined
+
+    def tick = $.props.flatMap { p =>
+      p.dispatchCB(Tick)
     }
 
-    val component = ScalaComponent.builder[Unit]("MomentInterop")
-      .renderBackend[Backend]
-      .componentDidMount(_.backend.start)
-      .build
+    def mount = Callback {
+      interval = js.timers.setInterval(1000)($.props.flatMap(_.dispatchCB(Tick)).runNow())
+    }
 
-    def apply() = component().vdomElement
+    def unmount = Callback {
+      interval foreach js.timers.clearInterval
+      interval = js.undefined
+    }
+
+    def render(p: ModelProxy[Props]) = {
+      <.div(
+        <.div(^.id := "container",
+          p().now.format()
+        )
+      )
+    }
+  }
+
+  val component = ScalaComponent.builder[ModelProxy[Props]]("MomentInterop")
+    .renderBackend[Backend]
+    .componentDidMount(_.backend.mount)
+    .componentWillUnmount(_.backend.unmount)
+    .build
+
+  def apply(props: ModelProxy[Props]) = component(props).vdomElement
 }
 
