@@ -1,1 +1,3 @@
-val x: Option[Int] = Some(null)
+import scala.scalajs.js
+
+val x: js.UndefOr[String] = js.undefined

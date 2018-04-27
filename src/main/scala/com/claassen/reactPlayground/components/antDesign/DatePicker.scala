@@ -45,9 +45,9 @@ object DatePicker extends ReactBridgeComponent {
             showTime: Boolean = false,
             showToday: Boolean = true,
             value: js.UndefOr[moment.Date] = js.undefined,
-            onCalendarChange: js.UndefOr[js.Function4[moment.Date, moment.Date, String, String, Unit]] = js.undefined,
-            onChange: js.UndefOr[(moment.Date, String) => Callback] = js.undefined,
-            onOk: js.UndefOr[js.Function] = js.undefined): WithProps = auto
+            onCalendarChange: js.UndefOr[(js.UndefOr[moment.Date], js.UndefOr[moment.Date], String, String) => Callback] = js.undefined,
+            onChange: js.UndefOr[(js.UndefOr[moment.Date], String) => Callback] = js.undefined,
+            onOk: js.UndefOr[Callback] = js.undefined): WithProps = auto
 }
 
 object DatePickerExample {
@@ -64,8 +64,8 @@ object DatePickerExample {
 
   class Backend($: BackendScope[ModelProxy[Props], Unit]) {
 
-    def handleChange(date: moment.Date, dateString: String): Callback = {
-      val d = Option(date)
+    def handleChange(date: js.UndefOr[moment.Date], dateString: String): Callback = {
+      val d = date.toOption.filter(_ != null)
       g.console.log(d.toString)
       g.console.log(date)
       $.props.flatMap(_.dispatchCB(OnChange(d)))
@@ -73,7 +73,7 @@ object DatePickerExample {
 
 
     def checkDisabledDate(date: js.UndefOr[moment.Date]): Boolean = {
-      if(date == null) false else date.exists(x => Set(0, 6).contains(x.day()))
+      date.toOption.filter(_ != null).exists(x => Set(0, 6).contains(x.day()))
     }
 
     def render(p: ModelProxy[Props]) = {

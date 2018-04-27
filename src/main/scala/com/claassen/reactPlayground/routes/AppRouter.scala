@@ -28,11 +28,16 @@ object AppRouter {
       AntDesign.routes.prefixPath_/("#antd").pmap[AppPage](Items) {
         case Items(p) => p
       }
+    val reactBootstrapRoutes: Rule =
+      ReactBootstrap.routes.prefixPath_/("#bootstrap").pmap[AppPage](Items) {
+        case Items(p) => p
+      }
     (trimSlashes
       | staticRoute(root, Home) ~> render(HomePage())
       | miscRoutes
       | calendarRoutes
-      | antDesignRoutes)
+      | antDesignRoutes
+      | reactBootstrapRoutes)
       .notFound(redirectToPage(Home)(Redirect.Replace))
       .renderWith(layout)
   }
@@ -41,7 +46,8 @@ object AppRouter {
     Menu("Home", Home),
     Menu("Misc", Items(Misc.MShoppingList)),
     Menu("Calendars", Items(Calendars.MFullCalendar)),
-    Menu("Ant Design", Items(AntDesign.MBadge))
+    Menu("Ant Design", Items(AntDesign.MBadge)),
+    Menu("Bootstrap", Items(ReactBootstrap.MNavbar))
   )
 
   def layout(c: RouterCtl[AppPage], r: Resolution[AppPage]) =
