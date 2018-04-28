@@ -6,7 +6,10 @@ import com.claassen.reactPlayground.components.reactBootstrap.NavbarExample
 
 object ReactBootstrap extends ChapterPage {
 
-  case object MNavbar extends Item("Navbar", "navbar", () => NavbarExample())
+  case object MNavbar extends Item("Navbar", "navbar", () => {
+    val connection = AppCircuit.connect(_.app.bootstrap.navbar)
+    connection(NavbarExample(_)).vdomElement
+  })
 
   val menu = Vector(MNavbar)
 }
