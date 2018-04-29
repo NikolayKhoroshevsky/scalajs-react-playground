@@ -7,6 +7,8 @@ import japgolly.scalajs.react.vdom.Implicits._
 
 object Misc extends ChapterPage {
 
+  val name = "Misc"
+  val key = "misc"
 
   case object MShoppingList extends Item("ShoppingList", "shoppinglist", () => ShoppingList())
 

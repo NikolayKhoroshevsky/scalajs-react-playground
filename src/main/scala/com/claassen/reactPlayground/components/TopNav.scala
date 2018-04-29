@@ -1,14 +1,18 @@
 package com.claassen.reactPlayground.components
 
+import com.claassen.reactPlayground.components.reactBootstrap.{Nav, NavItem, Navbar}
+import com.claassen.reactPlayground.components.reactBootstrap.NavbarExample.Click
+
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 import com.claassen.reactPlayground.models.Menu
 import com.claassen.reactPlayground.routes.AppRouter.AppPage
-
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.Reusability
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.html_<^._
+
+import scala.scalajs.js.|
 
 object TopNav {
 
@@ -44,19 +48,17 @@ object TopNav {
   val component = ScalaComponent
     .builder[Props]("TopNav")
     .render_P { P =>
-      <.header(
-        <.nav(
-          <.ul(
-            Style.navMenu,
-            P.menus.toTagMod { item =>
-              <.li(
-                ^.key := item.name,
-                Style.menuItem(item.route.getClass == P.selectedPage.getClass),
-                item.name,
-                P.ctrl setOnClick item.route
-              )
-            }
+
+      Navbar(inverse = true, fixedTop = true)(
+        Navbar.Header()(
+          Navbar.Brand()(
+            <.a(^.href:="#", "Home")
           )
+        ),
+        Nav(activeKey = P.selectedPage.eventKey.fold[String|Unit](())(x => x))(
+          P.menus.map( m =>
+            NavItem(eventKey = m.route.eventKey.get, onSelect= {_:String => P.ctrl.set(m.route)})(m.name)
+          ):_*
         )
       )
     }

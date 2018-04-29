@@ -9,6 +9,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 import scala.scalajs.js.|
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.Dynamic.{global => g}
 
 object Navbar extends ReactBridgeComponent {
@@ -19,7 +20,11 @@ object Navbar extends ReactBridgeComponent {
 
   override lazy val componentValue = RawComponent
 
-  def apply(): WithProps = auto
+  def apply(inverse: Boolean = false,
+            fixedTop: Boolean = false,
+            fixedBottom: Boolean = false,
+            staticTop: Boolean = false,
+            fluid: Boolean = false): WithProps = auto
 
 
   object Header extends ReactBridgeComponent {
@@ -55,7 +60,7 @@ object Nav extends ReactBridgeComponent {
 
   override lazy val componentValue = RawComponent
 
-  def apply(): WithProps = auto
+  def apply(activeKey: String | Unit = {}): WithProps = auto
 }
 
 object NavItem extends ReactBridgeComponent {
@@ -106,19 +111,20 @@ object MenuItem extends ReactBridgeComponent {
 
 object NavbarExample {
 
-  case class Props(clickHistory: List[String] = Nil)
+  case class Props(active: Option[String] = None, clickHistory: List[String] = Nil)
 
-  case class Click(key: String) extends Action
+  case class Click(key: Option[String]) extends Action
 
   class Handler[M](modelRW: ModelRW[M, Props]) extends ActionHandler(modelRW) {
     override protected def handle: PartialFunction[Any, ActionResult[M]] = {
-      case Click(key) => updated(value.copy(key :: value.clickHistory))
+      case Click(Some(key)) => updated(Props(Some(key), key :: value.clickHistory))
+      case Click(None) => updated(Props(None, "Home" :: value.clickHistory))
     }
   }
 
   class Backend($: BackendScope[ModelProxy[Props], Unit]) {
 
-    def handleSelect(eventKey: String) = $.props.flatMap(_.dispatchCB(Click(eventKey)))
+    def handleSelect(eventKey: String) = $.props.flatMap(_.dispatchCB(Click(Some(eventKey))))
 
     def render(p: ModelProxy[Props]) = {
 
@@ -127,13 +133,14 @@ object NavbarExample {
       }
 
       <.div(
-        Navbar()(
+        Navbar(inverse = true)(
           Navbar.Header()(
             Navbar.Brand()(
-              <.a(^.href := "#home", "React-Bootstrap")
+              <.a(^.onClick --> p.dispatchCB(Click(None)),
+                "React-Bootstrap")
             )
           ),
-          Nav()(
+          Nav(activeKey = p().active.fold[String|Unit](())(x => x))(
             NavItem(eventKey = "Link1", onSelect = handleSelect _)(
               "Link 1"
             ),

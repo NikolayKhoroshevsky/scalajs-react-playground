@@ -8,47 +8,41 @@ import japgolly.scalajs.react.vdom.html_<^._
 
 object AppRouter {
 
-  sealed trait AppPage
+  sealed trait AppPage {
+    def eventKey: Option[String]
+  }
 
-  case object Home extends AppPage
+  case object Home extends AppPage {
+    val eventKey: Option[String] = None
+  }
 
-  case class Items(p: Item) extends AppPage
+  case class Items(key: String, p: Item) extends AppPage {
+    def eventKey = Some(key)
+  }
+
 
   val config = RouterConfigDsl[AppPage].buildConfig { dsl =>
     import dsl._
-    val miscRoutes: Rule =
-      Misc.routes.prefixPath_/("#misc").pmap[AppPage](Items) {
-        case Items(p) => p
+
+    def chapterRoutes(chapterPage: ChapterPage): Rule = {
+      chapterPage.routes.prefixPath_/(chapterPage.prefix).pmap[AppPage](Items(chapterPage.key, _)) {
+        case Items(_, p) => p
       }
-    val calendarRoutes: Rule =
-      Calendars.routes.prefixPath_/("#calendars").pmap[AppPage](Items) {
-        case Items(p) => p
-      }
-    val antDesignRoutes: Rule =
-      AntDesign.routes.prefixPath_/("#antd").pmap[AppPage](Items) {
-        case Items(p) => p
-      }
-    val reactBootstrapRoutes: Rule =
-      ReactBootstrap.routes.prefixPath_/("#bootstrap").pmap[AppPage](Items) {
-        case Items(p) => p
-      }
+    }
+
     (trimSlashes
       | staticRoute(root, Home) ~> render(HomePage())
-      | miscRoutes
-      | calendarRoutes
-      | antDesignRoutes
-      | reactBootstrapRoutes)
+      | chapterRoutes(Misc)
+      | chapterRoutes(Calendars)
+      | chapterRoutes(AntDesign)
+      | chapterRoutes(ReactBootstrap))
       .notFound(redirectToPage(Home)(Redirect.Replace))
       .renderWith(layout)
   }
 
-  val mainMenu = Vector(
-    Menu("Home", Home),
-    Menu("Misc", Items(Misc.MShoppingList)),
-    Menu("Calendars", Items(Calendars.MFullCalendar)),
-    Menu("Ant Design", Items(AntDesign.MBadge)),
-    Menu("Bootstrap", Items(ReactBootstrap.MNavbar))
-  )
+  val mainMenu = Vector(Misc, Calendars, AntDesign, ReactBootstrap).map { chapterPage =>
+    Menu(chapterPage.name, Items(chapterPage.key, chapterPage.menu.head))
+  }
 
   def layout(c: RouterCtl[AppPage], r: Resolution[AppPage]) =
     <.div(

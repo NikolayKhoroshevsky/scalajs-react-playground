@@ -6,6 +6,9 @@ import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePick
 
 object AntDesign extends ChapterPage {
 
+  val name = "AntDesign"
+  val key = "antd"
+
   case object MBadge
     extends Item("Badge", "badge", () => {
       val connection = AppCircuit.connect(_.app.antDesign.badge)
