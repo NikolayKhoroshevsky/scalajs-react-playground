@@ -60,7 +60,10 @@ object Nav extends ReactBridgeComponent {
 
   override lazy val componentValue = RawComponent
 
-  def apply(activeKey: String | Unit = {}): WithProps = auto
+  def apply(activeKey: String | Unit = {},
+            stacked: Boolean = false,
+            justified: Boolean = false,
+            bsStyle: String = ""): WithProps = auto
 }
 
 object NavItem extends ReactBridgeComponent {
