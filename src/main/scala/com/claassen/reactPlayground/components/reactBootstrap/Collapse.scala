@@ -31,7 +31,7 @@ object CollapseExample {
       <.div(
         Button(onClick = handleClick _)("click"),
         Collapse(in = s.open)(
-          <.div(
+          <.div( ^.width := "400px",
             Well()(
               "Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident."
             )

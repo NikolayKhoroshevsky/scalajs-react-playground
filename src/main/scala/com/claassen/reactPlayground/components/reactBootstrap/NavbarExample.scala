@@ -48,9 +48,7 @@ object Navbar extends ReactBridgeComponent {
 
     def apply(): WithProps = auto
   }
-
 }
-
 
 object Nav extends ReactBridgeComponent {
 
@@ -82,6 +80,7 @@ object NavItem extends ReactBridgeComponent {
             eventKey: String | Unit = {}): WithProps = auto
 }
 
+
 object NavDropdown extends ReactBridgeComponent {
 
   @JSImport("react-bootstrap/lib/NavDropdown", JSImport.Default)
@@ -95,22 +94,6 @@ object NavDropdown extends ReactBridgeComponent {
             eventKey: String | Unit = {}): WithProps = auto
 }
 
-object MenuItem extends ReactBridgeComponent {
-
-  @JSImport("react-bootstrap/lib/MenuItem", JSImport.Default)
-  @js.native
-  object RawComponent extends js.Object
-
-  override lazy val componentValue = RawComponent
-
-  def apply(divider: Boolean = false,
-            active: Boolean = false,
-            disabled: Boolean = false,
-            href: js.UndefOr[String] = js.undefined,
-            onClick: js.UndefOr[ReactMouseEvent => Callback] = js.undefined,
-            onSelect: js.UndefOr[String => Callback] = js.undefined,
-            eventKey: String | Unit = {}): WithProps = auto
-}
 
 object NavbarExample {
 
