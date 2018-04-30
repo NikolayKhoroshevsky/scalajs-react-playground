@@ -49,8 +49,6 @@ object LeftNav {
     .builder[Props]("LeftNav")
     .render_P { P =>
 
-      g.console.log("selected: " + P.selectedPage.routerPath)
-
       Nav(bsStyle="tabs", stacked=true, activeKey = P.selectedPage.routerPath)(
         P.menus.map(m =>
           NavItem(eventKey = m.routerPath, onSelect = { _: String => P.ctrl.set(m) })(m.title)

@@ -63,7 +63,7 @@ object Nav extends ReactBridgeComponent {
   def apply(activeKey: String | Unit = {},
             stacked: Boolean = false,
             justified: Boolean = false,
-            bsStyle: String = ""): WithProps = auto
+            bsStyle: String | Unit = {}): WithProps = auto
 }
 
 object NavItem extends ReactBridgeComponent {

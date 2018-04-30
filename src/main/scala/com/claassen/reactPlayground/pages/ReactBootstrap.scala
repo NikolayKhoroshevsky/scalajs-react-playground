@@ -1,7 +1,7 @@
 package com.claassen.reactPlayground.pages
 
 import com.claassen.reactPlayground.AppCircuit
-import com.claassen.reactPlayground.components.reactBootstrap.NavbarExample
+import com.claassen.reactPlayground.components.reactBootstrap._
 
 
 object ReactBootstrap extends ChapterPage {
@@ -14,6 +14,16 @@ object ReactBootstrap extends ChapterPage {
     connection(NavbarExample(_)).vdomElement
   })
 
-  val menu = Vector(MNavbar)
+  case object MListGroup extends Item("ListGroup", "listgroup", () => {
+    val connection = AppCircuit.connect(_.app.bootstrap.listgroup)
+    connection(ListGroupExample(_)).vdomElement
+  })
+
+  case object MButtons extends Item("Buttons","buttons", () => ButtonExample())
+
+  case object MWell extends Item("Well","well", () => WellExample())
+
+  case object MCollapse extends Item("Collapse", "collapse", ()  => CollapseExample())
+  val menu = Vector(MButtons, MCollapse, MListGroup, MNavbar, MWell)
 }
 

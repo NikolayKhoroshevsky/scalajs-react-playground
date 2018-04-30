@@ -2,7 +2,7 @@ package com.claassen.reactPlayground
 
 import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample}
 import com.claassen.reactPlayground.components.misc.{MomentInterop, ReactCollapseExample, ReactCounterProtocol, TicTacToe}
-import com.claassen.reactPlayground.components.reactBootstrap.NavbarExample
+import com.claassen.reactPlayground.components.reactBootstrap.{ListGroupExample, NavbarExample}
 import com.claassen.reactPlayground.css.AppCSS
 import com.claassen.reactPlayground.routes.AppRouter
 import diode.react.{ModelProxy, ReactConnector}
@@ -42,7 +42,8 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new MomentInterop.Handler[RootModel](zoomTo(_.app.misc.moment)),
       new BadgeExample.Handler[RootModel](zoomTo(_.app.antDesign.badge)),
       new DatePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.datePicker)),
-      new NavbarExample.Handler[RootModel](zoomTo(_.app.bootstrap.navbar))
+      new NavbarExample.Handler[RootModel](zoomTo(_.app.bootstrap.navbar)),
+      new ListGroupExample.Handler[RootModel](zoomTo(_.app.bootstrap.listgroup))
     )
 
 }
@@ -59,4 +60,5 @@ case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
                      counter: ReactCounterProtocol.CounterModel = ReactCounterProtocol.CounterModel(0),
                      moment: MomentInterop.Props = MomentInterop.Props())
 
-case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props())
+case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props(),
+                     listgroup: ListGroupExample.Props= ListGroupExample.defaultProps)
