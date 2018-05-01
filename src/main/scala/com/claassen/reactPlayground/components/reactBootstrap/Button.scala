@@ -129,7 +129,7 @@ object ButtonExample {
       ),
       <.h3("Radio Toggle Buttons"),
       ButtonToolbar()(
-        ToggleButtonGroup(`type` = "radio", defaultValue = 2)(
+        ToggleButtonGroup(`type` = "radio", defaultValue = 2, name="options")(
           ToggleButton(value = 1)("Radio 1"),
           ToggleButton(value = 2)("Radio 2"),
           ToggleButton(value = 3)("Radio 3"),
