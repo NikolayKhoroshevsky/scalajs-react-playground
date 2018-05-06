@@ -91,50 +91,62 @@ object ButtonExample {
 
   val component = ScalaComponent.static("ButtonExample")(
     <.div(
-      <.h3("Buttons"),
-      ButtonToolbar()(
-        Button()("Default"),
-        Button(bsStyle = "primary")("Primary"),
-        Button(bsStyle = "success")("Success"),
-        Button(bsStyle = "info")("Info"),
-        Button(bsStyle = "warning")("Warning"),
-        Button(bsStyle = "danger")("Danger"),
-        Button(bsStyle = "link")("Link"),
-        Button(disabled = true)("Disabled")
-      ),
-      <.h3("Block Buttons"),
-      Well()(
-        Button(bsStyle = "primary", block = true)("Block level button 1"),
-        Button(block = true)("Block level button 1"),
-      ),
-      <.h3("Button Group"),
-      ButtonGroup()(
-        Button()("Left"),
-        Button()("Middle"),
-        Button()("Right")
-      ),
-      <.h3("Vertical Button Group"),
-      ButtonGroup(vertical = true)(
-        Button()("Top"),
-        Button()("Middle"),
-        Button()("Bottom")
-      ),
-      <.h3("Checkbox Toggle Buttons"),
-      ButtonToolbar()(
-        ToggleButtonGroup(`type` = "checkbox", defaultValue = List(1, 3))(
-          ToggleButton(value = 1)("Checkbox 1"),
-          ToggleButton(value = 2)("Checkbox 2"),
-          ToggleButton(value = 3)("Checkbox 3"),
+      <.div(^.paddingBottom := "10px",
+        <.h2("Buttons"),
+        ButtonToolbar()(
+          Button()("Default"),
+          Button(bsStyle = "primary")("Primary"),
+          Button(bsStyle = "success")("Success"),
+          Button(bsStyle = "info")("Info"),
+          Button(bsStyle = "warning")("Warning"),
+          Button(bsStyle = "danger")("Danger"),
+          Button(bsStyle = "link")("Link"),
+          Button(disabled = true)("Disabled")
         )
       ),
-      <.h3("Radio Toggle Buttons"),
-      ButtonToolbar()(
-        ToggleButtonGroup(`type` = "radio", defaultValue = 2, name="options")(
-          ToggleButton(value = 1)("Radio 1"),
-          ToggleButton(value = 2)("Radio 2"),
-          ToggleButton(value = 3)("Radio 3"),
+      <.div(^.paddingBottom := "10px",
+        <.h2("Block Buttons"),
+        Well()(
+          Button(bsStyle = "primary", block = true)("Block level button 1"),
+          Button(block = true)("Block level button 1")
         )
       ),
+      <.div(^.paddingBottom := "10px",
+        <.h2("Button Group"),
+        ButtonGroup()(
+          Button()("Left"),
+          Button()("Middle"),
+          Button()("Right")
+        )
+      ),
+      <.div(^.paddingBottom := "10px",
+        <.h2("Vertical Button Group"),
+        ButtonGroup(vertical = true)(
+          Button()("Top"),
+          Button()("Middle"),
+          Button()("Bottom")
+        )
+      ),
+      <.div(^.paddingBottom := "10px",
+        <.h2("Checkbox Toggle Buttons"),
+        ButtonToolbar()(
+          ToggleButtonGroup(`type` = "checkbox", defaultValue = List(1, 3))(
+            ToggleButton(value = 1)("Checkbox 1"),
+            ToggleButton(value = 2)("Checkbox 2"),
+            ToggleButton(value = 3)("Checkbox 3"),
+          )
+        )
+      ),
+      <.div(^.paddingBottom := "10px",
+        <.h2("Radio Toggle Buttons"),
+        ButtonToolbar()(
+          ToggleButtonGroup(`type` = "radio", defaultValue = 2, name = "options")(
+            ToggleButton(value = 1)("Radio 1"),
+            ToggleButton(value = 2)("Radio 2"),
+            ToggleButton(value = 3)("Radio 3"),
+          )
+        )
+      )
     )
   )
 

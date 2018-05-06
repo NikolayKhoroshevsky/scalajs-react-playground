@@ -30,6 +30,8 @@ object ReactBootstrap extends ChapterPage {
   case object MPanel extends Item("Panel","panel", () => PanelExample())
   case object MForms extends Item("Forms","forms", () => FormsExample())
 
-  val menu = Vector(MButtons, MDropdowns, MCollapse, MForms, MListGroup, MNavbar, MPanel, MWell)
+  case object MLayout extends Item("Layout","layout", ()=> LayoutExample())
+
+  val menu = Vector(MButtons, MCollapse, MDropdowns, MForms, MLayout, MListGroup, MNavbar, MPanel, MWell)
 }
 
