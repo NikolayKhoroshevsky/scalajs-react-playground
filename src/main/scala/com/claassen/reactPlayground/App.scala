@@ -2,7 +2,7 @@ package com.claassen.reactPlayground
 
 import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample}
 import com.claassen.reactPlayground.components.misc.{MomentInterop, ReactCollapseExample, ReactCounterProtocol, TicTacToe}
-import com.claassen.reactPlayground.components.reactBootstrap.{ListGroupExample, NavbarExample}
+import com.claassen.reactPlayground.components.reactBootstrap.{FinitePagination, ListGroupExample, NavbarExample, PaginationExample}
 import com.claassen.reactPlayground.css.AppCSS
 import com.claassen.reactPlayground.routes.AppRouter
 import diode.react.{ModelProxy, ReactConnector}
@@ -43,7 +43,9 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new BadgeExample.Handler[RootModel](zoomTo(_.app.antDesign.badge)),
       new DatePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.datePicker)),
       new NavbarExample.Handler[RootModel](zoomTo(_.app.bootstrap.navbar)),
-      new ListGroupExample.Handler[RootModel](zoomTo(_.app.bootstrap.listgroup))
+      new ListGroupExample.Handler[RootModel](zoomTo(_.app.bootstrap.listgroup)),
+      new FinitePagination.Handler[RootModel](zoomTo(_.app.bootstrap.pagination.pagination1)),
+      new FinitePagination.Handler[RootModel](zoomTo(_.app.bootstrap.pagination.pagination2)),
     )
 
 }
@@ -61,4 +63,8 @@ case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
                      moment: MomentInterop.Props = MomentInterop.Props())
 
 case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props(),
-                     listgroup: ListGroupExample.Props= ListGroupExample.defaultProps)
+                     listgroup: ListGroupExample.Props= ListGroupExample.defaultProps,
+                     pagination: PaginationExample.Props = PaginationExample.Props(
+                       FinitePagination.Props(10,10,4),
+                       FinitePagination.Props(100,10,4)
+                     ))

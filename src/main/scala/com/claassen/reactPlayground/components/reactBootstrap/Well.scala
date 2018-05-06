@@ -24,8 +24,15 @@ object WellExample {
 
   val component = ScalaComponent.static("WellExample")(
     <.div(
-      Well(bsSize = "large")("Look, I'm a large well!"),
-      Well(bsSize = "small")("Look, I'm a small well!")
+      <.div(^.paddingBottom := "10px",
+        <.h2("Wells"),
+        Panel()(
+          Panel.Body()(
+            Well(bsSize = "large")("Look, I'm a large well!"),
+            Well(bsSize = "small")("Look, I'm a small well!")
+          )
+        )
+      )
     )
   )
 

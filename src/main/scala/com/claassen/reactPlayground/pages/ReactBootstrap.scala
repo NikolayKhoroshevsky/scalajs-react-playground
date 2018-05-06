@@ -32,6 +32,27 @@ object ReactBootstrap extends ChapterPage {
 
   case object MLayout extends Item("Layout","layout", ()=> LayoutExample())
 
-  val menu = Vector(MButtons, MCollapse, MDropdowns, MForms, MLayout, MListGroup, MNavbar, MPanel, MWell)
+  case object MLabel extends Item("Label","label", () => LabelExample())
+
+  case object MTable extends Item("Table","table", () => TableExample())
+
+  case object MPagination extends Item("Pagination","pagination",  () => {
+    val connection = AppCircuit.connect(_.app.bootstrap.pagination)
+    connection(PaginationExample(_)).vdomElement
+  })
+
+  val menu = Vector(
+    MButtons,
+    MCollapse,
+    MDropdowns,
+    MForms,
+    MLabel,
+    MLayout,
+    MListGroup,
+    MNavbar,
+    MPagination,
+    MPanel,
+    MTable,
+    MWell)
 }
 
