@@ -2,7 +2,6 @@ package com.claassen.reactPlayground
 
 import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample}
 import com.claassen.reactPlayground.components.misc.{MomentInterop, ReactCollapseExample, ReactCounterProtocol, TicTacToe}
-import com.claassen.reactPlayground.components.reactBootstrap.PaginationExample.PaginationProps
 import com.claassen.reactPlayground.components.reactBootstrap.{FinitePagination, ListGroupExample, NavbarExample, PaginationExample}
 import com.claassen.reactPlayground.css.AppCSS
 import com.claassen.reactPlayground.routes.AppRouter
@@ -45,7 +44,8 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new DatePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.datePicker)),
       new NavbarExample.Handler[RootModel](zoomTo(_.app.bootstrap.navbar)),
       new ListGroupExample.Handler[RootModel](zoomTo(_.app.bootstrap.listgroup)),
-      new PaginationExample.Handler[RootModel](zoomTo(_.app.bootstrap.pagination)),
+      new FinitePagination.Handler[RootModel](zoomTo(_.app.bootstrap.pagination.pagination1)),
+      new FinitePagination.Handler[RootModel](zoomTo(_.app.bootstrap.pagination.pagination2)),
     )
 
 }
@@ -65,6 +65,6 @@ case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
 case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props(),
                      listgroup: ListGroupExample.Props= ListGroupExample.defaultProps,
                      pagination: PaginationExample.Props = PaginationExample.Props(
-                       PaginationProps(10,4),
-                       PaginationProps(100,4)
+                       FinitePagination.Props(1, 10,10,4),
+                       FinitePagination.Props(2, 100,7,4)
                      ))
