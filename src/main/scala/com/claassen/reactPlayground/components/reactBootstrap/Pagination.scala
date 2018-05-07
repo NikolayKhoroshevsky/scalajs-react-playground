@@ -71,7 +71,6 @@ object Pagination extends ReactBridgeComponent {
     override lazy val componentValue = RawComponent
 
     def apply(disabled: Boolean = false,
-              active: Boolean = false,
               onClick: (ReactMouseEvent => Callback) | Unit = {},
               href: String | Unit = {}): WithProps = auto
   }
@@ -85,7 +84,6 @@ object Pagination extends ReactBridgeComponent {
     override lazy val componentValue = RawComponent
 
     def apply(disabled: Boolean = false,
-              active: Boolean = false,
               onClick: (ReactMouseEvent => Callback) | Unit = {},
               href: String | Unit = {}): WithProps = auto
   }
@@ -99,7 +97,6 @@ object Pagination extends ReactBridgeComponent {
     override lazy val componentValue = RawComponent
 
     def apply(disabled: Boolean = false,
-              active: Boolean = false,
               onClick: (ReactMouseEvent => Callback) | Unit = {},
               href: String | Unit = {}): WithProps = auto
   }
@@ -113,7 +110,6 @@ object Pagination extends ReactBridgeComponent {
     override lazy val componentValue = RawComponent
 
     def apply(disabled: Boolean = false,
-              active: Boolean = false,
               onClick: (ReactMouseEvent => Callback) | Unit = {},
               href: String | Unit = {}): WithProps = auto
   }
@@ -127,7 +123,6 @@ object Pagination extends ReactBridgeComponent {
     override lazy val componentValue = RawComponent
 
     def apply(disabled: Boolean = false,
-              active: Boolean = false,
               onClick: (ReactMouseEvent => Callback) | Unit = {},
               href: String | Unit = {}): WithProps = auto
   }
@@ -141,9 +136,10 @@ object PaginationExample {
   case class Props(pagination1: FinitePagination.Props,
                    pagination2: FinitePagination.Props)
 
-  case class Select(pager: Int, page:Int) extends Action
+  case class Select(pager: Int, page: Int) extends Action
 
   class Handler()
+
   val component = ScalaComponent.builder[ModelProxy[Props]]("PaginationExample")
     .render_P(P =>
       <.div(
@@ -214,17 +210,18 @@ object PaginationExample {
 
 object FinitePagination {
 
-  case class Props(total: Int,
+  case class Props(id: Int,
+                   total: Int,
                    visible: Int,
                    selected: Int,
                    includeFirstLast: Boolean = true,
                    size: String = "medium")
 
-  case class Select(page: Int) extends Action
+  case class Select(id: Int, page: Int) extends Action
 
-  class Handler[M](modelRW: ModelRW[M, Props]) extends ActionHandler(modelRW) {
+  class Handler[M](id: Int, modelRW: ModelRW[M, Props]) extends ActionHandler(modelRW) {
     override protected def handle: PartialFunction[Any, ActionResult[M]] = {
-      case Select(page) => updated(value.copy(selected = page))
+      case Select(`id`, page) => updated(value.copy(selected = page))
     }
   }
 
@@ -240,7 +237,7 @@ object FinitePagination {
 
     def handleLast(e: ReactMouseEvent) = dispatch(p => p.total)
 
-    def dispatch(f: Props => Int) = $.props.flatMap(p => p.dispatchCB(Select(f(p()))))
+    def dispatch(f: Props => Int) = $.props.flatMap(p => p.dispatchCB(Select(p().id, f(p()))))
 
 
     def buildItems(p: Props) = {
@@ -250,15 +247,18 @@ object FinitePagination {
             onClick = handleClick(i) _)(s"$i")
         }
       } else {
+
         val center = p.visible / 2 + 1
-        val leftElipsis = p.selected > center
-        val rightElipsis = p.selected < (p.total - center)
-        val min = if (leftElipsis) {
-          p.selected - center + 2
-        } else 1
-        val max = if (rightElipsis) {
-          p.selected + p.visible - center - 1
-        } else p.total
+        val minOffset = p.selected - center + 1
+        val maxOffset = p.selected + center - 1
+        val (leftEllipsis, min, max, rightEllipsis) =
+          if (minOffset <= 1) {
+            (false, 1, p.visible - 1, true)
+          } else if (maxOffset >= p.total) {
+            (true, p.total - p.visible + 2, p.total, false)
+          } else {
+            (true, minOffset + 1, maxOffset - 1, true)
+          }
         List(
           if (p.includeFirstLast) List(Pagination.First(
             disabled = p.selected == 1,
@@ -268,14 +268,14 @@ object FinitePagination {
             disabled = p.selected == 1,
             onClick = handlePrevious _
           )()),
-          if (leftElipsis) List(Pagination.Ellipsis(disabled = true)()) else Nil,
+          if (leftEllipsis) List(Pagination.Ellipsis(disabled = true)()) else Nil,
           (min to max).map { i =>
             Pagination.Item(
               active = i == p.selected,
               onClick = handleClick(i) _
             )(s"$i")
           }.toList,
-          if (rightElipsis) List(Pagination.Ellipsis(disabled = true)()) else Nil,
+          if (rightEllipsis) List(Pagination.Ellipsis(disabled = true)()) else Nil,
           List(Pagination.Next(
             disabled = p.selected == p.total,
             onClick = handleNext _
