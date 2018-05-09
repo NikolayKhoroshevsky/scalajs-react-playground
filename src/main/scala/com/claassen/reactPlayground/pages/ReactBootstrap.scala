@@ -41,6 +41,8 @@ object ReactBootstrap extends ChapterPage {
     connection(PaginationExample(_)).vdomElement
   })
 
+  case object MTabs extends Item("Tabs", "tabs", () => TabExample())
+
   val menu = Vector(
     MButtons,
     MCollapse,
@@ -53,6 +55,7 @@ object ReactBootstrap extends ChapterPage {
     MPagination,
     MPanel,
     MTable,
+    MTabs,
     MWell)
 }
 
