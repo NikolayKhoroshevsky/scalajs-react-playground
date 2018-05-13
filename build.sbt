@@ -32,7 +32,8 @@ libraryDependencies ++= Seq(
   "io.suzaku"                         %%% "diode-react"           % (diodeVersion + ".120"),
   "org.querki"                        %%% "jquery-facade"         % "1.2",
   "com.payalabs"                      %%% "scalajs-react-bridge"  % "0.6.0",
-  "ru.pavkin"                         %%% "scala-js-momentjs"     % "0.9.1"
+  "ru.pavkin"                         %%% "scala-js-momentjs"     % "0.9.1",
+  "com.nrinaudo"                      %%% "kantan.csv"            % "0.4.0"
 )
 
 npmDependencies in Compile ++= Seq(

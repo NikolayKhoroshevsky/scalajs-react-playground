@@ -1,3 +1,5 @@
-import scala.scalajs.js
+val x =("A","b")
 
-val x: js.UndefOr[String] = js.undefined
+case class Foo(a: String, b:String)
+
+val y = Foo.tupled(x)

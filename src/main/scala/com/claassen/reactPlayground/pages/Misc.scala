@@ -42,10 +42,16 @@ object Misc extends ChapterPage {
       connection(p => MasterDetailExample(p)).vdomElement
     })
 
+  case object MDataTable extends Item("Data Table","datatable", () => {
+    val connection = AppCircuit.connect(_.app.misc.dataTable)
+    connection(p => DataTableExample(p)).vdomElement
+  })
+
   val menu = Vector(MShoppingList,
     MTicTacToWithDiode,
     MReactCounter,
     MReactCollapse,
     MMomentInterop,
-    MMasterDetail)
+    MMasterDetail,
+    MDataTable)
 }

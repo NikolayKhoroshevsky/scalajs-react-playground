@@ -41,6 +41,7 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new ReactCollapseExample.Handler[RootModel](zoomTo(_.app.misc.collapse)),
       new MomentInterop.Handler[RootModel](zoomTo(_.app.misc.moment)),
       new MasterDetailExample.Handler[RootModel](zoomTo(_.app.misc.masterDetail)),
+      new DataTableExample.Handler[RootModel](zoomTo(_.app.misc.dataTable)),
       new BadgeExample.Handler[RootModel](zoomTo(_.app.antDesign.badge)),
       new DatePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.datePicker)),
       new TimePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.timePicker)),
@@ -54,7 +55,9 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
 case class RootModel(app: AppState = AppState())
 
-case class AppState(misc: MiscState = MiscState(), antDesign: AntDesign = AntDesign(), bootstrap: Bootstrap = Bootstrap())
+case class AppState(misc: MiscState = MiscState(),
+                    antDesign: AntDesign = AntDesign(),
+                    bootstrap: Bootstrap = Bootstrap())
 
 case class AntDesign(badge: BadgeExample.Props = BadgeExample.Props(),
                      datePicker: DatePickerExample.Props = DatePickerExample.Props(),
@@ -64,7 +67,8 @@ case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
                      collapse: ReactCollapseExample.Props = ReactCollapseExample.Props(),
                      counter: ReactCounterProtocol.CounterModel = ReactCounterProtocol.CounterModel(0),
                      moment: MomentInterop.Props = MomentInterop.Props(),
-                     masterDetail: MasterDetailExample.Props = MasterDetailExample.Props(None))
+                     masterDetail: MasterDetailExample.Props = MasterDetailExample.Props(None),
+                     dataTable: DataTableExample.Props = DataTableExample.Props())
 
 case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props(),
                      listgroup: ListGroupExample.Props= ListGroupExample.defaultProps,
