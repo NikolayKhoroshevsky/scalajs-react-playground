@@ -82,3 +82,12 @@ body {
 .rbc-event.all-day {
     background-color: rgb(58, 135, 135);
 }
+
+.hidden {
+    display: none !important;
+}
+
+.float-right {
+    z-index: 99;
+    float:right;
+}

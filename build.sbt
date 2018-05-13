@@ -36,6 +36,7 @@ libraryDependencies ++= Seq(
 )
 
 npmDependencies in Compile ++= Seq(
+  "bootstrap"           -> "3.3.7",
   "react"               -> reactJSVersion,
   "react-dom"           -> reactJSVersion,
   "jquery"              -> "3.2.1",

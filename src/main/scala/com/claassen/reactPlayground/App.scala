@@ -1,7 +1,7 @@
 package com.claassen.reactPlayground
 
 import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample, TimePickerExample}
-import com.claassen.reactPlayground.components.misc.{MomentInterop, ReactCollapseExample, ReactCounterProtocol, TicTacToe}
+import com.claassen.reactPlayground.components.misc._
 import com.claassen.reactPlayground.components.reactBootstrap.{FinitePagination, ListGroupExample, NavbarExample, PaginationExample}
 import com.claassen.reactPlayground.css.AppCSS
 import com.claassen.reactPlayground.routes.AppRouter
@@ -40,6 +40,7 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new TicTacToe.GameHandler[RootModel](zoomTo(_.app.misc.ticTacToe.moves)),
       new ReactCollapseExample.Handler[RootModel](zoomTo(_.app.misc.collapse)),
       new MomentInterop.Handler[RootModel](zoomTo(_.app.misc.moment)),
+      new MasterDetailExample.Handler[RootModel](zoomTo(_.app.misc.masterDetail)),
       new BadgeExample.Handler[RootModel](zoomTo(_.app.antDesign.badge)),
       new DatePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.datePicker)),
       new TimePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.timePicker)),
@@ -62,7 +63,8 @@ case class AntDesign(badge: BadgeExample.Props = BadgeExample.Props(),
 case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
                      collapse: ReactCollapseExample.Props = ReactCollapseExample.Props(),
                      counter: ReactCounterProtocol.CounterModel = ReactCounterProtocol.CounterModel(0),
-                     moment: MomentInterop.Props = MomentInterop.Props())
+                     moment: MomentInterop.Props = MomentInterop.Props(),
+                     masterDetail: MasterDetailExample.Props = MasterDetailExample.Props(None))
 
 case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props(),
                      listgroup: ListGroupExample.Props= ListGroupExample.defaultProps,

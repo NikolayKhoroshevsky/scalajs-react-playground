@@ -36,9 +36,16 @@ object Misc extends ChapterPage {
       connection(p => MomentInterop(p)).vdomElement
     })
 
+  case object MMasterDetail
+    extends Item("Master/Detail", "master-detail", () => {
+      val connection = AppCircuit.connect(_.app.misc.masterDetail)
+      connection(p => MasterDetailExample(p)).vdomElement
+    })
+
   val menu = Vector(MShoppingList,
     MTicTacToWithDiode,
     MReactCounter,
     MReactCollapse,
-    MMomentInterop)
+    MMomentInterop,
+    MMasterDetail)
 }
