@@ -9,7 +9,6 @@ import japgolly.scalajs.react.vdom.html_<^._
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.{global => g}
 import scala.scalajs.js.annotation.JSImport
-
 import moment._
 
 object BigCalendar extends ReactBridgeComponent {
@@ -17,13 +16,7 @@ object BigCalendar extends ReactBridgeComponent {
   @JSImport("react-big-calendar", JSImport.Default)
   @js.native
   object RawComponent extends js.Object {
-    def momentLocalizer(moment: Moment.type): Unit = js.native
-  }
-
-  @JSImport("moment", JSImport.Default)
-  @js.native
-  object Moment extends js.Object {
-    def apply(): js.Object = js.native
+    def momentLocalizer(m: js.Any): Unit = js.native
   }
 
   override lazy val componentValue = {
@@ -36,6 +29,8 @@ object BigCalendar extends ReactBridgeComponent {
               *
               */
             elementProps: js.UndefOr[js.Object] = js.undefined,
+
+            defaultDate: js.UndefOr[js.Date] = js.undefined,
 
             /**
               * The current date value of the calendar. Determines the visible view range.
@@ -208,20 +203,20 @@ object BigCalendar extends ReactBridgeComponent {
               *
               * &controllable date
               */
-            onNavigate: js.UndefOr[() => Unit] = js.undefined,
+            onNavigate: js.UndefOr[() => Callback] = js.undefined,
 
             /**
               * Callback fired when the `view` value changes.
               *
               * &controllable view
               */
-            onView: js.UndefOr[() => Unit] = js.undefined,
+            onView: js.UndefOr[() => Callback] = js.undefined,
 
             /**
               * Callback fired when date header, or the truncated events links are clicked
               *
               */
-            onDrillDown: js.UndefOr[() => Unit] = js.undefined,
+            onDrillDown: js.UndefOr[() => Callback] = js.undefined,
 
             /**
               * Callback fired when the visible date range changes. Returns an Array of dates
@@ -229,7 +224,7 @@ object BigCalendar extends ReactBridgeComponent {
               *
               * Cutom views may return something different.
               */
-            onRangeChange: js.UndefOr[() => Unit] = js.undefined,
+            onRangeChange: js.UndefOr[() => Callback] = js.undefined,
 
             /**
               * A callback fired when a date selection is made. Only fires when `selectable` is `true`.
@@ -445,7 +440,7 @@ object BigCalendar extends ReactBridgeComponent {
               * ) => { className?: string, style?: Object }
               * ```
               */
-            eventPropGetter: js.UndefOr[() => Unit] = js.undefined,
+            eventPropGetter: js.UndefOr[(Event, js.Date, js.Date, Boolean) => js.Object] = js.undefined,
 
             /**
               * Optionally provide a function that returns an object of className or style props
@@ -666,32 +661,40 @@ object BigCalendar extends ReactBridgeComponent {
             */): WithProps = auto
 }
 
-class Event(val title: String,
-            val start: Date,
-            val end: Date,
+class Event(val id: Int,
+            val title: String,
+            val start: js.Date,
+            val end: js.Date,
             val allDay: Boolean) extends js.Object
 
 object BigCalendarExample {
 
-  val events = {
-    val start = new Date()
-    val end = new Date()
-    end.setHours(end.getHours + 1)
-    List(new Event("Some Event", start, end, allDay = false))
-  }
+  val events = (0 to 30).map { x =>
+    val start = Moment().startOf("month").add(x, "days")
+    val end = Moment(start).add(1, "hours")
+    new Event(x, s"Event [$x]", start.toDate(), end.toDate(), allDay = false)
+  }.toList
 
   case class Props(events: List[Event])
 
   class Backend($: BackendScope[Props, Unit]) {
 
+    def eventProps(event: Event, start: js.Date, end: js.Date, selected: Boolean) = {
+      g.console.log(s"id: ${event.id}, start $start, end: $end, selected: $selected")
+      js.Dynamic.literal()
+    }
+
     def render(p: Props) = {
 
       def getEvents(): js.Array[js.Object] = js.Array(p.events: _*)
 
-      g.console.log(getEvents())
-      <.div(^.style := js.Dynamic.literal(height = "600px"),
+      <.div(^.style := js.Dynamic.literal(height = "600px", width = "1000px"),
         "Calendar",
-        BigCalendar(events = getEvents())
+        BigCalendar(
+          defaultDate = Moment().toDate(),
+          events = getEvents(),
+          eventPropGetter = eventProps _
+        )
       )
     }
   }

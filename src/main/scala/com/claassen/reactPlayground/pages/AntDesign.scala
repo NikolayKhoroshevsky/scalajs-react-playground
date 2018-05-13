@@ -22,7 +22,10 @@ object AntDesign extends ChapterPage {
     })
 
   case object MTimePicker
-    extends Item("TimePicker", "timepicker", () => TimePickerExample())
+    extends Item("TimePicker", "timepicker", () => {
+      val connection = AppCircuit.connect(_.app.antDesign.timePicker)
+      connection(TimePickerExample(_)).vdomElement
+    })
 
   val menu = Vector(MBadge, MDatePicker, MTimePicker)
 }

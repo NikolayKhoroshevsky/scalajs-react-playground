@@ -1,6 +1,6 @@
 package com.claassen.reactPlayground
 
-import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample}
+import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample, TimePickerExample}
 import com.claassen.reactPlayground.components.misc.{MomentInterop, ReactCollapseExample, ReactCounterProtocol, TicTacToe}
 import com.claassen.reactPlayground.components.reactBootstrap.{FinitePagination, ListGroupExample, NavbarExample, PaginationExample}
 import com.claassen.reactPlayground.css.AppCSS
@@ -42,6 +42,7 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new MomentInterop.Handler[RootModel](zoomTo(_.app.misc.moment)),
       new BadgeExample.Handler[RootModel](zoomTo(_.app.antDesign.badge)),
       new DatePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.datePicker)),
+      new TimePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.timePicker)),
       new NavbarExample.Handler[RootModel](zoomTo(_.app.bootstrap.navbar)),
       new ListGroupExample.Handler[RootModel](zoomTo(_.app.bootstrap.listgroup)),
       new FinitePagination.Handler[RootModel](zoomTo(_.app.bootstrap.pagination.pagination1)),
@@ -55,7 +56,8 @@ case class RootModel(app: AppState = AppState())
 case class AppState(misc: MiscState = MiscState(), antDesign: AntDesign = AntDesign(), bootstrap: Bootstrap = Bootstrap())
 
 case class AntDesign(badge: BadgeExample.Props = BadgeExample.Props(),
-                     datePicker: DatePickerExample.Props = DatePickerExample.Props())
+                     datePicker: DatePickerExample.Props = DatePickerExample.Props(),
+                     timePicker: TimePickerExample.Props = TimePickerExample.Props())
 
 case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
                      collapse: ReactCollapseExample.Props = ReactCollapseExample.Props(),

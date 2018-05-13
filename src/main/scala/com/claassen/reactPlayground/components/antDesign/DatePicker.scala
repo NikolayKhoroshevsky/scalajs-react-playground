@@ -81,7 +81,8 @@ object DatePickerExample {
 
       <.div(
         <.div(
-          DatePicker(defaultValue = p().value.orUndefined,
+          DatePicker(
+            defaultValue = p().value.orUndefined,
             disabledDate = checkDisabledDate _,
             onChange = handleChange _
           )
