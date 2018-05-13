@@ -265,7 +265,7 @@ object BigCalendar extends ReactBridgeComponent {
               *
               * &controllable selected
               */
-            onSelectEvent: js.UndefOr[() => Unit] = js.undefined,
+            onSelectEvent: js.UndefOr[(Event, ReactMouseEvent) => CallbackTo[Boolean]] = js.undefined,
 
             /**
               * Callback fired when a calendar event is clicked twice.
@@ -662,6 +662,7 @@ object BigCalendar extends ReactBridgeComponent {
 }
 
 class Event(val id: Int,
+            val eventGroupId: Int,
             val title: String,
             val start: js.Date,
             val end: js.Date,
@@ -669,39 +670,68 @@ class Event(val id: Int,
 
 object BigCalendarExample {
 
-  val events = (0 to 30).map { x =>
-    val start = Moment().startOf("month").add(x, "days")
-    val end = Moment(start).add(1, "hours")
-    new Event(x, s"Event [$x]", start.toDate(), end.toDate(), allDay = false)
-  }.toList
-
-  case class Props(events: List[Event])
-
-  class Backend($: BackendScope[Props, Unit]) {
-
-    def eventProps(event: Event, start: js.Date, end: js.Date, selected: Boolean) = {
-      g.console.log(s"id: ${event.id}, start $start, end: $end, selected: $selected")
-      js.Dynamic.literal()
+  val events = {
+    case class Ev(groupId: Int, title: String, day: Int, start: Int = 0, duration: Int = 60, allDay: Boolean = false)
+    val month = Moment().startOf("month")
+    List(
+      Ev(1, "G1 Appt 1", 1, 9, 90),
+      Ev(1, "G1 Appt 2", 5, 10),
+      Ev(1, "G1 Reminder", 15, allDay = true),
+      Ev(2, "G2 Appt 1", 5, 11)
+    ).zipWithIndex.map {
+      case (Ev(groupId, title, day, _, _, true), id) =>
+        val start = Moment(month).add(day, "days")
+        new Event(id, groupId, title, start.toDate(), start.toDate(), true)
+      case (Ev(groupId, title, day, hour, duration, _), id) =>
+        val start = Moment(month).add(day, "days").add(hour,"hours")
+        val end = Moment(start).add(duration,"minutes")
+        new Event(id, groupId, title, start.toDate(), end.toDate(), false)
     }
+  }
 
-    def render(p: Props) = {
+  case class Props(events: List[Event], selected: Option[Event])
 
-      def getEvents(): js.Array[js.Object] = js.Array(p.events: _*)
+  class Backend($: BackendScope[Props, Props]) {
+
+    def handleSelect(ev: Event, e: ReactMouseEvent): CallbackTo[Boolean] =
+      $.modState(_.copy(selected = Some(ev))) >> CallbackTo(true)
+
+    def render(p: Props, s: Props) = {
+
+      def getEvents(): js.Array[js.Object] = js.Array(s.events: _*)
+
+      def eventProps(event: Event, start: js.Date, end: js.Date, selected: Boolean) = {
+        val selectedGroupId = s.selected.map(_.eventGroupId).getOrElse(-1)
+        g.console.log(selectedGroupId)
+        if (selected) {
+          js.Dynamic.literal()
+        } else if (event.eventGroupId == selectedGroupId) {
+          js.Dynamic.literal(className = "related")
+        } else if (event.allDay) {
+          js.Dynamic.literal(className = "all-day")
+        } else if (event.id % 3 == 0) {
+          js.Dynamic.literal(style = js.Dynamic.literal(backgroundColor = "#3174ad"))
+        } else {
+          js.Dynamic.literal()
+        }
+      }
 
       <.div(^.style := js.Dynamic.literal(height = "600px", width = "1000px"),
         "Calendar",
         BigCalendar(
           defaultDate = Moment().toDate(),
           events = getEvents(),
-          eventPropGetter = eventProps _
+          eventPropGetter = eventProps _,
+          onSelectEvent = handleSelect _
         )
       )
     }
   }
 
   val component = ScalaComponent.builder[Props]("BigCalendarExample")
+      .initialStateFromProps(x => x)
     .renderBackend[Backend]
     .build
 
-  def apply() = component(Props(events)).vdomElement
+  def apply() = component(Props(events, None)).vdomElement
 }
