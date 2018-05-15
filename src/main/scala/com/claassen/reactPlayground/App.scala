@@ -47,8 +47,7 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new TimePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.timePicker)),
       new NavbarExample.Handler[RootModel](zoomTo(_.app.bootstrap.navbar)),
       new ListGroupExample.Handler[RootModel](zoomTo(_.app.bootstrap.listgroup)),
-      new FinitePagination.Handler[RootModel](zoomTo(_.app.bootstrap.pagination.pagination1)),
-      new FinitePagination.Handler[RootModel](zoomTo(_.app.bootstrap.pagination.pagination2)),
+      new PaginationExample.Handler[RootModel](zoomTo(_.app.bootstrap.pagination))
     )
 
 }
@@ -72,7 +71,4 @@ case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
 
 case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props(),
                      listgroup: ListGroupExample.Props= ListGroupExample.defaultProps,
-                     pagination: PaginationExample.Props = PaginationExample.Props(
-                       FinitePagination.Props(1, 10,10,4),
-                       FinitePagination.Props(2, 100,7,4)
-                     ))
+                     pagination: PaginationExample.Props = PaginationExample.Props(4,4))

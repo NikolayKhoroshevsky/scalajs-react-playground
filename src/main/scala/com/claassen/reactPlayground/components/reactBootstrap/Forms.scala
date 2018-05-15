@@ -111,7 +111,8 @@ object Glyphicon extends ReactBridgeComponent {
 
   override lazy val componentValue = RawComponent
 
-  def apply(glyph: String | Unit = {}): WithProps = auto
+  def apply(glyph: String | Unit = {},
+            bsClass: String | Unit = {}): WithProps = auto
 }
 
 object Checkbox extends ReactBridgeComponent {

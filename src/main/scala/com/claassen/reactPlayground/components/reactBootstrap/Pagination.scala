@@ -1,5 +1,6 @@
 package com.claassen.reactPlayground.components.reactBootstrap
 
+import com.claassen.reactPlayground.components.reactBootstrap.FinitePagination.{Props, Select}
 import com.payalabs.scalajs.react.bridge._
 import diode.react.ModelProxy
 import diode.{Action, ActionHandler, ActionResult, ModelRW}
@@ -133,15 +134,30 @@ object Pagination extends ReactBridgeComponent {
 
 object PaginationExample {
 
-  case class Props(pagination1: FinitePagination.Props,
-                   pagination2: FinitePagination.Props)
+  case class Props(pager1Selected: Int,
+                   pager2Selected: Int)
 
   case class Select(pager: Int, page: Int) extends Action
 
-  class Handler()
+  class Handler[M](modelRW: ModelRW[M, Props]) extends ActionHandler(modelRW) {
+    override protected def handle: PartialFunction[Any, ActionResult[M]] = {
+      {
+        case Select(1, page) => updated(value.copy(pager1Selected = page))
+        case Select(2, page) =>
+          g.console.log(s"pager 2: $page")
+          updated(value.copy(pager2Selected = page))
+      }
+    }
+  }
 
-  val component = ScalaComponent.builder[ModelProxy[Props]]("PaginationExample")
-    .render_P(P =>
+  class Backend($: BackendScope[ModelProxy[Props], Unit]) {
+
+    def handleSelect(id: Int)(selected: Int): Callback = $.props.flatMap(_.dispatchCB(Select(id, selected)))
+
+    def render(P: ModelProxy[Props]) = {
+      val pager1Props = FinitePagination.Props(10, 10, P().pager1Selected, handleSelect(1))
+      val pager2Props = FinitePagination.Props(100, 10, P().pager2Selected, handleSelect(2))
+
       <.div(
         <.div(^.paddingBottom := "10px",
           <.h1("Pager"),
@@ -186,9 +202,9 @@ object PaginationExample {
             <.h2("Sizes"),
             Panel()(
               Panel.Body()(
-                FinitePagination(P.zoom(_.pagination1.copy(size = "large"))),
-                FinitePagination(P.zoom(_.pagination1)),
-                FinitePagination(P.zoom(_.pagination1.copy(size = "small"))),
+                FinitePagination(pager1Props.copy(size = "large")),
+                FinitePagination(pager1Props),
+                FinitePagination(pager1Props.copy(size = "small")),
               )
             )
           ),
@@ -196,13 +212,17 @@ object PaginationExample {
             <.h2("More Options"),
             Panel()(
               Panel.Body()(
-                FinitePagination(P.zoom(_.pagination2)),
+                FinitePagination(pager2Props),
               )
             )
-          ),
+          )
         )
       )
-    )
+    }
+  }
+
+  val component = ScalaComponent.builder[ModelProxy[Props]]("PaginationExample")
+    .renderBackend[Backend]
     .build
 
   def apply(props: ModelProxy[Props]) = component(props).vdomElement
@@ -212,103 +232,89 @@ object FinitePagination {
 
   case class Select(id: Int, page: Int) extends Action
 
-  case class Props(id: Int,
-                   total: Int,
+  case class Props(total: Int,
                    visible: Int,
                    selected: Int,
+                   onSelect: Int => Callback,
                    includeFirstLast: Boolean = true,
-                   size: String = "medium") {
-    def select(page: Int) = Select(id,page)
-  }
+                   size: String = "medium")
 
+  class Backend($: BackendScope[Props, Unit]) {
 
-  class Handler[M](modelRW: ModelRW[M, Props]) extends ActionHandler(modelRW) {
-    override protected def handle: PartialFunction[Any, ActionResult[M]] = {
-      val id = value.id
+    def handleClick(page: Int)(e: ReactMouseEvent) = dispatch(_ => page)
 
-      {
-        case Select(`id`, page) => updated(value.copy(selected = page))
-      }
-    }
-  }
+    def handleFirst(e: ReactMouseEvent) = dispatch(_ => 0)
 
-  class Backend($: BackendScope[ModelProxy[Props], Unit]) {
+    def handlePrevious(e: ReactMouseEvent) = dispatch(p => Math.max(0, p.selected - 1))
 
-    def handleClick(page: Int)(e: ReactMouseEvent) = dispatch(_.select(page))
+    def handleNext(e: ReactMouseEvent) = dispatch(p => Math.min(p.total - 1, p.selected + 1))
 
-    def handleFirst(e: ReactMouseEvent) = dispatch(_.select(1))
+    def handleLast(e: ReactMouseEvent) = dispatch(p => p.total - 1)
 
-    def handlePrevious(e: ReactMouseEvent) = dispatch(p => p.select(Math.max(1, p.selected - 1)))
-
-    def handleNext(e: ReactMouseEvent) = dispatch(p => p.select(Math.min(p.total, p.selected + 1)))
-
-    def handleLast(e: ReactMouseEvent) = dispatch(p => p.select(p.total))
-
-    def dispatch(f: Props => Select) = $.props.flatMap(p => p.dispatchCB(f(p())))
+    def dispatch(f: Props => Int): Callback = $.props.flatMap(p => p.onSelect(f(p)))
 
 
     def buildItems(p: Props) = {
       if (p.visible >= p.total) {
-        (1 to p.total).map { i =>
+        (0 until p.total).map { i =>
           Pagination.Item(active = i == p.selected,
-            onClick = handleClick(i) _)(s"$i")
+            onClick = handleClick(i) _)(s"${i + 1}")
         }
       } else {
-
-        val center = p.visible / 2 + 1
-        val minOffset = p.selected - center + 1
-        val maxOffset = p.selected + center - 1
+        val center = p.visible / 2
+        val leftOffset = center
+        val rightOffset = p.visible - center - 1
         val (leftEllipsis, min, max, rightEllipsis) =
-          if (minOffset <= 1) {
-            (false, 1, p.visible - 1, true)
-          } else if (maxOffset >= p.total) {
-            (true, p.total - p.visible + 2, p.total, false)
+          if (p.selected - leftOffset <= 0) {
+            (false, 0, p.visible - 1, true)
+          } else if (p.selected + rightOffset >= p.total -1) {
+            (true, p.total - p.visible + 1, p.total, false)
           } else {
-            (true, minOffset + 1, maxOffset - 1, true)
+            (true, p.selected - leftOffset + 1, p.selected + rightOffset, true)
           }
         List(
           if (p.includeFirstLast) List(Pagination.First(
-            disabled = p.selected == 1,
+            disabled = p.selected == 0,
             onClick = handleFirst _
           )()) else Nil,
           List(Pagination.Prev(
-            disabled = p.selected == 1,
+            disabled = p.selected == 0,
             onClick = handlePrevious _
           )()),
           if (leftEllipsis) List(Pagination.Ellipsis(disabled = true)()) else Nil,
-          (min to max).map { i =>
+          (min until max).map { i =>
             Pagination.Item(
               active = i == p.selected,
               onClick = handleClick(i) _
-            )(s"$i")
+            )(s"${i + 1}")
           }.toList,
           if (rightEllipsis) List(Pagination.Ellipsis(disabled = true)()) else Nil,
           List(Pagination.Next(
-            disabled = p.selected == p.total,
+            disabled = p.selected == p.total - 1,
             onClick = handleNext _
           )()),
           if (p.includeFirstLast) List(Pagination.Last(
-            disabled = p.selected == p.total,
+            disabled = p.selected == p.total - 1,
             onClick = handleLast _
           )()) else Nil
         ).flatten
       }
     }
 
-    def render(p: ModelProxy[Props]) = {
+    def render(p: Props) = {
       <.div(
         Pagination(
-          bsSize = p().size
+          bsSize = p.size
         )(
-          buildItems(p()): _*
+          buildItems(p): _*
         )
       )
     }
   }
 
-  val component = ScalaComponent.builder[ModelProxy[Props]]("SimplePagination")
+  val component = ScalaComponent.builder[Props]("SimplePagination")
     .renderBackend[Backend]
     .build
 
-  def apply(props: ModelProxy[Props]) = component(props).vdomElement
+  def apply(props: Props) = component(props).vdomElement
 }

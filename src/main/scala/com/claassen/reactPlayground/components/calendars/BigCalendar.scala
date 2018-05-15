@@ -722,7 +722,9 @@ object BigCalendarExample {
           defaultDate = Moment().toDate(),
           events = getEvents(),
           eventPropGetter = eventProps _,
-          onSelectEvent = handleSelect _
+          onSelectEvent = handleSelect _,
+          min = Moment("10","HH").toDate(),
+          max = Moment("18","HH").toDate()
         )
       )
     }

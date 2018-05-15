@@ -91,3 +91,15 @@ body {
     z-index: 99;
     float:right;
 }
+
+.sortable {
+    color: #aaaaaa;
+    cursor: pointer;
+}
+.sortable:hover {
+    color: #555555;
+    cursor: pointer;
+}
+.sortby {
+    color: #000000;
+}
