@@ -34,13 +34,12 @@ object AppRouter {
       | staticRoute(root, Home) ~> render(HomePage())
       | chapterRoutes(Misc)
       | chapterRoutes(Calendars)
-      | chapterRoutes(AntDesign)
       | chapterRoutes(ReactBootstrap))
       .notFound(redirectToPage(Home)(Redirect.Replace))
       .renderWith(layout)
   }
 
-  val mainMenu = Vector(Misc, Calendars, AntDesign, ReactBootstrap).map { chapterPage =>
+  val mainMenu = Vector(Misc, Calendars, ReactBootstrap).map { chapterPage =>
     Menu(chapterPage.name, Items(chapterPage.key, chapterPage.menu.head))
   }
 

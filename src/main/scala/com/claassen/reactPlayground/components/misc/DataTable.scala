@@ -37,6 +37,10 @@ object DataTable {
 
     def handleClear(e: ReactMouseEvent): Callback = $.modState(_.copy(filter = None, currentPage = 0))
 
+    def handlePageSizeChange(v: js.Any) = {
+      $.modState(_.copy(pageSize = v.toString.toInt,currentPage = 0))
+    }
+
     def handleFilterChange(e: ReactEventFromInput) = {
       val value = e.target.value
       if (value == null || value.isEmpty) {
@@ -122,7 +126,21 @@ object DataTable {
           )
         ),
 
-        // TODO: only show when there is more items than pageSize
+        <.div( ^.className := "float-right",
+        ButtonToolbar()(
+          ToggleButtonGroup(
+            defaultValue = S.pageSize,
+            name = "pageSize",
+            onChange = handlePageSizeChange _
+          )(
+            ToggleButton(value = 10)("10"),
+            ToggleButton(value = 25)("25"),
+            ToggleButton(value = 50)("50")
+          )
+        )
+        ),
+
+          // TODO: only show when there is more items than pageSize
         FinitePagination(FinitePagination.Props(pages, 5, S.currentPage, handlePaging))
       )
     }

@@ -1,13 +1,11 @@
 package com.claassen.reactPlayground
 
-import com.claassen.reactPlayground.components.antDesign.{BadgeExample, DatePickerExample, TimePickerExample}
 import com.claassen.reactPlayground.components.misc._
-import com.claassen.reactPlayground.components.reactBootstrap.{FinitePagination, ListGroupExample, NavbarExample, PaginationExample}
+import com.claassen.reactPlayground.components.reactBootstrap.{ListGroupExample, NavbarExample, PaginationExample}
 import com.claassen.reactPlayground.css.AppCSS
 import com.claassen.reactPlayground.routes.AppRouter
-import diode.react.{ModelProxy, ReactConnector}
+import diode.react.ReactConnector
 import diode.{ActionHandler, Circuit}
-import japgolly.scalajs.react.vdom.VdomElement
 import org.scalajs.dom.document
 
 object App {
@@ -42,9 +40,6 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new MomentInterop.Handler[RootModel](zoomTo(_.app.misc.moment)),
       new MasterDetailExample.Handler[RootModel](zoomTo(_.app.misc.masterDetail)),
       new DataTableExample.Handler[RootModel](zoomTo(_.app.misc.dataTable)),
-      new BadgeExample.Handler[RootModel](zoomTo(_.app.antDesign.badge)),
-      new DatePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.datePicker)),
-      new TimePickerExample.Handler[RootModel](zoomTo(_.app.antDesign.timePicker)),
       new NavbarExample.Handler[RootModel](zoomTo(_.app.bootstrap.navbar)),
       new ListGroupExample.Handler[RootModel](zoomTo(_.app.bootstrap.listgroup)),
       new PaginationExample.Handler[RootModel](zoomTo(_.app.bootstrap.pagination))
@@ -55,12 +50,7 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 case class RootModel(app: AppState = AppState())
 
 case class AppState(misc: MiscState = MiscState(),
-                    antDesign: AntDesign = AntDesign(),
                     bootstrap: Bootstrap = Bootstrap())
-
-case class AntDesign(badge: BadgeExample.Props = BadgeExample.Props(),
-                     datePicker: DatePickerExample.Props = DatePickerExample.Props(),
-                     timePicker: TimePickerExample.Props = TimePickerExample.Props())
 
 case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
                      collapse: ReactCollapseExample.Props = ReactCollapseExample.Props(),

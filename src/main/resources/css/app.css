@@ -103,3 +103,7 @@ body {
 .sortby {
     color: #000000;
 }
+
+.pagination {
+    margin: 0px;
+}

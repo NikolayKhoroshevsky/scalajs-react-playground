@@ -47,7 +47,6 @@ npmDependencies in Compile ++= Seq(
   "react-big-calendar"  -> "0.19.0",
   "react-motion"        -> "0.5.2",
   "react-collapse"      -> "4.0.3",
-  "antd"                -> "3.4.1"
 )
 
 webpackBundlingMode := scalajsbundler.BundlingMode.LibraryOnly()
