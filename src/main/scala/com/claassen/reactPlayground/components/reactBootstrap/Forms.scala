@@ -46,9 +46,11 @@ object FormControl extends ReactBridgeComponent {
 
   def apply(`type`: String | Unit = {},
             multiple: Boolean | Unit = {},
+            defaultValue: String | Unit = {},
             value: String | Unit = {},
             componentClass: String | Unit = {},
             placeholder: String | Unit = {},
+            readOnly: Boolean | Unit = {},
             onChange: (ReactEventFromInput => Callback) | Unit = {},
             id: String | Unit = {},
             bsClass: String | Unit = {},

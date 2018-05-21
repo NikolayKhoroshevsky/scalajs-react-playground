@@ -42,7 +42,8 @@ object Button extends ReactBridgeComponent {
 
   override lazy val componentValue = RawComponent
 
-  def apply(active: Boolean = false,
+  def apply(id: String | Unit= {},
+            active: Boolean = false,
             disabled: Boolean = false,
             block: Boolean = false,
             onClick: (ReactMouseEvent => Callback) | Unit = {},

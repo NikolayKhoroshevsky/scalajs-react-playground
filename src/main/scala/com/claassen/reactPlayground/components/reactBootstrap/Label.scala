@@ -22,7 +22,7 @@ object Label extends ReactBridgeComponent {
 
 object LabelExample {
 
-  val component = ScalaComponent.static("WellExample")(
+  val component = ScalaComponent.static("LabelExample")(
     <.div(
       <.div(^.paddingBottom := "10px",
         <.h2("Labels"),

@@ -43,6 +43,8 @@ object ReactBootstrap extends ChapterPage {
 
   case object MTabs extends Item("Tabs", "tabs", () => TabExample())
 
+  case object MOverlay extends Item("Overlay", "overlay", () => OverlayExample())
+
   val menu = Vector(
     MButtons,
     MCollapse,
@@ -52,6 +54,7 @@ object ReactBootstrap extends ChapterPage {
     MLayout,
     MListGroup,
     MNavbar,
+    MOverlay,
     MPagination,
     MPanel,
     MTable,

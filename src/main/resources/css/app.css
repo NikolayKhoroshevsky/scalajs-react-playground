@@ -105,5 +105,51 @@ body {
 }
 
 .pagination {
-    margin: 0px;
+    margin: 0;
+}
+
+.tp-input {
+    width: 126px;
+}
+.tp-box {
+    display: flex;
+    height:95px;
+    width: 126px;
+}
+.tp-select-list{
+    margin: 0;
+    width:42px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.tp-select-list:hover {
+    overflow-y: scroll;
+
+}
+
+.tp-divider {
+    border-left: 1px solid #aaaaaa;
+}
+
+.tp-select-list>ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0px;
+    cursor: pointer;
+}
+.tp-select-list>ul>li {
+    color: #888888;
+    box-sizing: border-box;
+    padding-left: 5px;
+}
+
+.tp-select-list>ul>li:hover {
+    background-color: #bbbbff;
+    color: #888888;
+}
+
+.tp-selected {
+    background-color: #eeeeee;
+    color: #337ab7 !important;
 }
