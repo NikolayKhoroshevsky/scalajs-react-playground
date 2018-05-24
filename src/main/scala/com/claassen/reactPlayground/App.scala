@@ -40,6 +40,7 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
       new MomentInterop.Handler[RootModel](zoomTo(_.app.misc.moment)),
       new MasterDetailExample.Handler[RootModel](zoomTo(_.app.misc.masterDetail)),
       new DataTableExample.Handler[RootModel](zoomTo(_.app.misc.dataTable)),
+      new TimerPickerExample.Handler[RootModel](zoomTo(_.app.misc.timePicker)),
       new NavbarExample.Handler[RootModel](zoomTo(_.app.bootstrap.navbar)),
       new ListGroupExample.Handler[RootModel](zoomTo(_.app.bootstrap.listgroup)),
       new PaginationExample.Handler[RootModel](zoomTo(_.app.bootstrap.pagination))
@@ -57,7 +58,8 @@ case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
                      counter: ReactCounterProtocol.CounterModel = ReactCounterProtocol.CounterModel(0),
                      moment: MomentInterop.Props = MomentInterop.Props(),
                      masterDetail: MasterDetailExample.Props = MasterDetailExample.Props(None),
-                     dataTable: DataTableExample.Props = DataTableExample.Props())
+                     dataTable: DataTableExample.Props = DataTableExample.Props(),
+                     timePicker: TimerPickerExample.Props = TimerPickerExample.Props())
 
 case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props(),
                      listgroup: ListGroupExample.Props= ListGroupExample.defaultProps,

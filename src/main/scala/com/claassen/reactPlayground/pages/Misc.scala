@@ -47,7 +47,10 @@ object Misc extends ChapterPage {
     connection(p => DataTableExample(p)).vdomElement
   })
 
-  case object MTimePicker extends Item("Time Picker","timepicker", () => TimerPickerExample())
+  case object MTimePicker extends Item("Time Picker","timepicker", () => {
+    val connection = AppCircuit.connect(_.app.misc.timePicker)
+    connection(p => TimerPickerExample(p)).vdomElement
+  })
 
   val menu = Vector(MShoppingList,
     MTicTacToWithDiode,
