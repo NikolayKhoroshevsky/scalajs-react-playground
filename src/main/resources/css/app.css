@@ -140,16 +140,16 @@ body {
     line-break: auto;
 }
 .tp-input {
-    width: 126px;
+    width: 134px;
 }
 .tp-box {
     display: flex;
     height:95px;
-    width: 126px;
+    width: 134px;
 }
 .tp-select-list{
     margin: 0;
-    width:42px;
+    width:44px;
     overflow-y: hidden;
     overflow-x: hidden;
 }

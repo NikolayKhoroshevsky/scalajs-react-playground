@@ -39,7 +39,7 @@ object TimePicker {
     def selectTime = time.getOrElse(shadowTime)
   }
 
-  case class Props(name: String, onChange: Option[Time] => Callback, placeholder: String = "Select Time", time: Option[Time] = None)
+  case class Props(name: String, onChange: Option[Time] => Callback, placeholder: String = "Select time", time: Option[Time] = None)
 
 
   class Backend($: BackendScope[Props, State]) extends OnUnmount {
@@ -51,9 +51,6 @@ object TimePicker {
     private val amRef = Ref[dom.html.Element]
 
     def handleToggle(e: ReactMouseEvent): Callback = for {
-      _ <- Callback {
-        e.stopPropagation()
-      }
       state <- $.state
       _ <- if (state.show) handleHide(state) else handleShow(state)
     } yield ()
@@ -69,28 +66,37 @@ object TimePicker {
       _ <- $.setState(state.copy(show = true, top = el.offsetTop, left = el.offsetLeft, time = state.time))
     } yield ()
 
-
-    def closeOnClick(e: dom.MouseEvent): Callback = for {
-      el <- popover.get
-      _ <- if (belongsTo(e.target.asInstanceOf[dom.html.Element], el)) Callback.empty else {
-        $.state.flatMap(handleHide)
-      }
+    def handleRemove(e: ReactMouseEvent): Callback = for {
+      state <- $.state
+      _ <- handleHide(state.copy(time = None))
     } yield ()
+
+    def handleClickOutside(e: dom.MouseEvent): Callback = for {
+      p <- popover.get
+      t <- target.get
+      clickTarget = e.target.asInstanceOf[dom.html.Element]
+      _ <- if (belongsTo(clickTarget, p) || belongsTo(clickTarget, t)) Callback.empty
+      else for {
+        state <- $.state
+        _ <- if (state.show) handleHide(state) else Callback.empty
+      } yield {}
+    } yield {}
 
     def belongsTo(target: dom.html.Element, container: dom.html.Element): Boolean =
       target == container || container.contains(target)
 
-    def handleChange(e: ReactEventFromInput) = Callback {}
+    def handleChange(e: ReactEventFromInput) = Callback.empty
 
     def bound(v: Int, default: Int, f: Int => Boolean): Int = if (f(v)) default else v
 
     def render(P: Props, S: State) = {
 
-      def value: String | Unit = {
+
+      val value: String = {
         val time = if (S.show) S.time else P.time
-        time.fold[String | Unit](()) {
+        time.map {
           case Time(hour, minute, am) => f"$hour%02d:$minute%02d ${if (am) "am" else "pm"}"
-        }
+        }.getOrElse("")
       }
 
       <.div(
@@ -98,7 +104,9 @@ object TimePicker {
           <.div(
             InputGroup()(
               ^.className := "tp-input",
-              FormControl(`type` = "text", placeholder = P.placeholder, value = value, onChange = handleChange _)(^.onClick ==> handleToggle),
+              FormControl(`type` = "text", placeholder = P.placeholder, value = value, onChange = handleChange _)(
+                ^.onClick ==> handleToggle
+              ),
               InputGroup.Addon()(Glyphicon(glyph = "time")())
             )
           ).withRef(target)
@@ -115,7 +123,10 @@ object TimePicker {
           InputGroup()(
             ^.className := "tp-input",
             FormControl(`type` = "text", placeholder = P.placeholder, value = value, onChange = handleChange _),
-            InputGroup.Addon()(Glyphicon(glyph = "remove-circle")())
+            InputGroup.Addon()(
+              ^.onClick ==> handleRemove,
+              Glyphicon(glyph = "remove-circle")
+            )
           ),
           <.div(^.className := "tp-box",
             <.div(
@@ -192,7 +203,6 @@ object TimePicker {
         minuteEl <- minuteRef.get
         amEl <- amRef.get
       } yield {
-        g.console.log(s"${current.selectTime}")
         hourEl.scrollTop = (current.selectTime.hour - 1) * 20
         minuteEl.scrollTop = current.selectTime.minute / 10 * 20
         amEl.scrollTop = if (current.selectTime.am) 0 else 20
@@ -209,7 +219,7 @@ object TimePicker {
     .renderBackend[Backend]
     .componentDidUpdate(x => x.backend.didUpdate(x.prevState, x.currentState))
     .configure(
-      EventListener[dom.MouseEvent].install("click", _.backend.closeOnClick, _ => dom.window)
+      EventListener[dom.MouseEvent].install("click", _.backend.handleClickOutside, _ => dom.window)
     )
     .build
 
@@ -225,18 +235,12 @@ object TimerPickerExample {
 
   class Handler[M](modelRW: ModelRW[M, Props]) extends ActionHandler(modelRW) {
     override protected def handle: PartialFunction[Any, ActionResult[M]] = {
-      g.console.log("handling action")
-
-      {
-        case SetTime(time) => updated(value.copy(time = time))
-      }
+      case SetTime(time) => updated(value.copy(time = time))
     }
   }
 
   val component = ScalaComponent.builder[ModelProxy[Props]]("TimePickerExample")
     .render_P { P =>
-
-      g.console.log(s"render: ${P().time}")
 
       <.div(
         <.div(^.paddingBottom := "10px",
@@ -245,10 +249,7 @@ object TimerPickerExample {
             Panel.Body()(
               TimePicker(TimePicker.Props(
                 "tp",
-                onChange = t => {
-                  g.console.log("dispatch")
-                  P.dispatchCB(SetTime(t))
-                },
+                onChange = t => P.dispatchCB(SetTime(t)),
                 time = P().time))
             )
           )

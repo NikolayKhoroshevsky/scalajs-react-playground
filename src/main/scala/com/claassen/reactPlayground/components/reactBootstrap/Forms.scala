@@ -1,12 +1,15 @@
 package com.claassen.reactPlayground.components.reactBootstrap
 
 import com.payalabs.scalajs.react.bridge._
+import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^.{<, _}
+import org.scalajs.dom
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 import scala.scalajs.js.|
+import scala.scalajs.js.Dynamic.{global => g}
 
 object Form extends ReactBridgeComponent {
 
@@ -187,16 +190,29 @@ object InputGroup extends ReactBridgeComponent {
 
 object FormsExample {
 
-  val component = ScalaComponent.static("FormsExample")(
-    <.div(
-      SimpleForm(),
-      SupportedControls(),
-      InlineForms(),
-      HorizontalForms(),
-      InputGroups(),
-      ValidationStates()
-    )
-  )
+  case class Props(controlledValue: String)
+
+  class Backend($: BackendScope[Unit, String]) {
+
+    def render(S: String) = {
+      <.div(
+        SimpleForm(),
+        ControlledForm(
+          ControlledForm.Props(S, s => $.setState(s))
+        ),
+        SupportedControls(),
+        InlineForms(),
+        HorizontalForms(),
+        InputGroups(),
+        ValidationStates()
+      )
+    }
+  }
+
+  val component = ScalaComponent.builder[Unit]("FormsExample")
+    .initialState("")
+    .renderBackend[Backend]
+    .build
 
   def apply() = component().vdomElement
 }
@@ -243,6 +259,64 @@ object SimpleForm {
     .build
 
   def apply() = component("").vdomElement
+}
+
+object ControlledForm {
+
+  case class Props(value: String, onChange: String => Callback)
+
+  class Backend($: BackendScope[Props, Unit]) {
+
+    private val target = Ref[dom.html.Element]
+    private val dataSource = Ref[dom.html.Input]
+
+    def handleChange(e: ReactEventFromInput) = Callback {
+      g.console.log(s"onChange: ${e.target.value}")
+    }
+
+    def updateInput: Callback = for {
+      input <- dataSource.get
+      props <- $.props
+      _ <- props.onChange(input.value)
+    } yield ()
+
+    def clearInput(e: ReactMouseEvent): Callback = for {
+      props <- $.props
+      _ <- props.onChange("")
+    } yield ()
+
+    def render(p: Props) = {
+      val value = p.value
+
+      <.div(^.paddingBottom := "10px",
+        <.h2("Controlled Form"),
+        Panel()(
+          Panel.Body()(
+            FormGroup()(
+              <.div(
+                InputGroup()(
+                  ^.className := "tp-input",
+                  FormControl(`type` = "text", placeholder = "Select time", value = value, onChange = handleChange _)(
+                    ^.onClick ==> clearInput
+                  ),
+                  InputGroup.Addon()(Glyphicon(glyph = "time")())
+                )
+              ).withRef(target)
+            ),
+            <.input(^.`type` := "text", ^.id := "data-source").withRef(dataSource),
+            <.input(^.`type` := "button", ^.onClick --> updateInput, ^.value := "Update")
+          )
+        )
+      )
+
+    }
+  }
+
+  val component = ScalaComponent.builder[Props]("ControlledForm")
+    .renderBackend[Backend]
+    .build
+
+  def apply(props: Props) = component(props).vdomElement
 }
 
 object FieldGroup {

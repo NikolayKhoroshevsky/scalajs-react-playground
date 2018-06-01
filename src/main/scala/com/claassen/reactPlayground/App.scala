@@ -1,5 +1,6 @@
 package com.claassen.reactPlayground
 
+import com.claassen.reactPlayground.components.misc.TimePicker.Time
 import com.claassen.reactPlayground.components.misc._
 import com.claassen.reactPlayground.components.reactBootstrap.{ListGroupExample, NavbarExample, PaginationExample}
 import com.claassen.reactPlayground.css.AppCSS
@@ -59,7 +60,7 @@ case class MiscState(ticTacToe: TicTacToe.GameState = TicTacToe.GameState(),
                      moment: MomentInterop.Props = MomentInterop.Props(),
                      masterDetail: MasterDetailExample.Props = MasterDetailExample.Props(None),
                      dataTable: DataTableExample.Props = DataTableExample.Props(),
-                     timePicker: TimerPickerExample.Props = TimerPickerExample.Props())
+                     timePicker: TimerPickerExample.Props = TimerPickerExample.Props(time = Some(Time())))
 
 case class Bootstrap(navbar: NavbarExample.Props = NavbarExample.Props(),
                      listgroup: ListGroupExample.Props= ListGroupExample.defaultProps,
